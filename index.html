@@ -176,14 +176,14 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
-        .download-button {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;  /* 或者 top: 20px; 看你喜欢放哪里 */
+      .download-button {
+    position: absolute;  /* 改为absolute定位 */
+    left: 20px;         /* 放在左边 */
+    top: 20px;          /* 放在上边 */
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: #4a9eff;  /* 一个漂亮的蓝色 */
+    background: #ff9a9e;  /* 改成和界面一致的砖红色 */
     color: white;
     border: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -193,10 +193,12 @@
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    transition: all 0.3s ease;  /* 添加过渡效果 */
 }
 
 .download-button:hover {
     transform: scale(1.1);
+    background: #ff8087;  /* 悬浮时颜色稍微深一点 */
 }
 
         /* 音乐播放器 */

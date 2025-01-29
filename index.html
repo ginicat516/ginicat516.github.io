@@ -176,6 +176,29 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
+        .download-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;  /* 或者 top: 20px; 看你喜欢放哪里 */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #4a9eff;  /* 一个漂亮的蓝色 */
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.download-button:hover {
+    transform: scale(1.1);
+}
+
         /* 音乐播放器 */
         .music-player {
             position: fixed;
@@ -309,7 +332,15 @@
             </div>
         </main>
     </div>
-
+    
+<!-- 在保存按钮旁边添加下载按钮 -->
+<button class="save-button" id="saveButton">
+    <i class="fas fa-check"></i>
+</button>
+<button class="download-button" id="downloadButton">
+    <i class="fas fa-download"></i>
+</button>
+    
     <!-- 音乐播放器 -->
     <div class="music-player">
         <button class="music-control" id="musicToggle">
@@ -368,6 +399,27 @@
             editButton.style.display = 'block';
             updatePreview();
         });
+
+        // 下载功能
+const downloadButton = document.getElementById('downloadButton');
+
+downloadButton.addEventListener('click', () => {
+    const content = editor.value;
+    const filename = 'my_writing.md';
+    
+    // 创建下载链接
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    
+    // 触发下载
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+});
 
         // 音乐控制
         const audio = new Audio('music/bgm.mp3');  // 

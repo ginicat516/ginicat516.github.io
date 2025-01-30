@@ -258,25 +258,19 @@
     padding: 10px;
 }
 
-       .editor1{
+        .editor1 {
     border: 1px solid #ccc;
-    min-height: 100px; 
-    max-height: 200px;
-    overflow-y: auto;
+    min-height: 200px;
     padding: 10px;
     outline: none;
-           margin-top: 20px; 
   }
 
   .comment {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ccc;
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
     padding: 10px;
     font-size: 16px;
-  }
-          .comment-list {
-    display: flex;
-    flex-direction: column-reverse; 
+  } 
         
         /* 音乐播放器 */
         .music-player {
@@ -443,11 +437,12 @@
             Background Music
         </div>
     </div>
-    
-<div class="comment-list"></div>
+
     
   <div class="editor1" contenteditable="true"></div>
 <button onclick="postComment()">点击留言哦</button>
+
+    <div class="comment-list"></div>
 
     <script>
         // 创建星星
@@ -666,7 +661,7 @@ function generateTOC() {
     comment.innerHTML = editor.innerHTML;
 
     const commentList = document.querySelector('.comment-list');
-    commentList.appendChild(comment);  // 这里可以用appendChild了
+    commentList.appendChild(comment);
 
     editor.innerHTML = '';
   }

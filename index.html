@@ -258,6 +258,22 @@
     padding: 10px;
 }
 
+        .comment-box {
+  border: 1px solid #eee;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.comment-header {
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.comment-content {
+  padding: 10px; 
+}
+        
         /* 音乐播放器 */
         .music-player {
             position: fixed;
@@ -423,6 +439,19 @@
             Background Music
         </div>
     </div>
+
+    <div class="comment-form">
+  <h3>发表评论</h3>
+  <div>
+    <label>昵称:</label>
+    <input type="text" id="username">
+  </div>
+  <div>
+    <label>内容:</label>
+    <textarea id="content" rows="5"></textarea>  
+  </div>
+  <button id="submit">发表</button>
+</div>
 
     <script>
         // 创建星星
@@ -632,6 +661,21 @@ function generateTOC() {
             tocContent.appendChild(tocItem);
         }
     });
+}
+
+        function generateTOC() {
+  const content = editor.value;
+  const lines = content.split('\n');
+  const tocContent = 
+    document.getElementById('tocContent');
+  tocContent.innerHTML = '';
+  
+  lines.forEach(line => {
+    if (line.startsWith('##')) {
+      tocContent.innerHTML += 
+        `<div>${line.slice(2)}</div>`;
+    }
+  });
 }
 
         // 初始化

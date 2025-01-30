@@ -265,14 +265,18 @@
     overflow-y: auto;
     padding: 10px;
     outline: none;
+           margin-top: 20px; 
   }
 
   .comment {
-    margin-top: 20px;
-    border-top: 1px solid #ccc;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
     padding: 10px;
     font-size: 16px;
   }
+          .comment-list {
+    display: flex;
+    flex-direction: column-reverse; 
         
         /* 音乐播放器 */
         .music-player {
@@ -439,11 +443,11 @@
             Background Music
         </div>
     </div>
-
+    
+<div class="comment-list"></div>
+    
   <div class="editor1" contenteditable="true"></div>
 <button onclick="postComment()">点击留言哦</button>
-
-<div class="comment-list"></div>
 
     <script>
         // 创建星星
@@ -662,8 +666,7 @@ function generateTOC() {
     comment.innerHTML = editor.innerHTML;
 
     const commentList = document.querySelector('.comment-list');
-    // 把 appendChild 改成 prepend
-    commentList.prepend(comment);  // 这行是关键修改
+    commentList.appendChild(comment);  // 这里可以用appendChild了
 
     editor.innerHTML = '';
   }

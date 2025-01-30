@@ -258,7 +258,7 @@
     padding: 10px;
 }
 
-       .editor 1{
+       .editor1{
     border: 1px solid #ccc;
     min-height: 100px; 
     max-height: 200px;
@@ -440,7 +440,7 @@
         </div>
     </div>
 
-  <div class="editor 1" contenteditable="true"></div>
+  <div class="editor1" contenteditable="true"></div>
 <button onclick="postComment()">c的回应</button>
 
 <div class="comment-list"></div>
@@ -656,7 +656,7 @@ function generateTOC() {
 }
 
         function postComment() {
-    const editor = document.querySelector('.editor 1');
+    const editor = document.querySelector('.editor1');
     const comment = document.createElement('div');
     comment.className = 'comment';
     comment.innerHTML = editor.innerHTML;

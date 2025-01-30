@@ -655,14 +655,15 @@ function generateTOC() {
     });
 }
 
-        function postComment() {
+          function postComment() {
     const editor = document.querySelector('.editor1');
     const comment = document.createElement('div');
     comment.className = 'comment';
     comment.innerHTML = editor.innerHTML;
 
     const commentList = document.querySelector('.comment-list');
-    commentList.appendChild(comment);
+    // 把 appendChild 改成 prepend
+    commentList.prepend(comment);  // 这行是关键修改
 
     editor.innerHTML = '';
   }

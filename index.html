@@ -662,7 +662,7 @@ function generateTOC() {
     comment.innerHTML = editor.innerHTML;
 
     const commentList = document.querySelector('.comment-list');
-    commentList.insertBefore(comment, commentList.firstChild); ;
+    commentList.insertBefore(comment, commentList.children[0]);
 
     editor.innerHTML = '';
   }

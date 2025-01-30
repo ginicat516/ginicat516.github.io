@@ -258,21 +258,19 @@
     padding: 10px;
 }
 
-        .comment-box {
-  border: 1px solid #eee;
-  padding: 10px;
-  margin-bottom: 20px;
-}
+       .editor {
+    border: 1px solid #ccc;
+    min-height: 200px;
+    padding: 10px;
+    outline: none;
+  }
 
-.comment-header {
-  font-weight: bold;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.comment-content {
-  padding: 10px; 
-}
+  .comment {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    font-size: 16px;
+  }
         
         /* 音乐播放器 */
         .music-player {
@@ -440,38 +438,10 @@
         </div>
     </div>
 
-    <div class="comment-list">
-  <div class="comment-box">
-    <div class="comment-header">
-      张三 2023-05-20 12:34
-    </div>
-    <div class="comment-content">
-      这个网站做得真不错,内容很有深度!
-    </div>
-  </div>
-  
-  <div class="comment-box">
-    <div class="comment-header">
-      李四 2023-05-19 09:15  
-    </div>
-    <div class="comment-content">
-      期待网站的后续更新,加油!
-    </div>
-  </div>
-</div>
+  <div class="editor" contenteditable="true"></div>
+<button onclick="postComment()">发表留言</button>
 
-    <div class="comment-form">
-  <h3>发表评论</h3>
-  <div>
-    <label>昵称:</label>
-    <input type="text" id="username">
-  </div>
-  <div>
-    <label>内容:</label>
-    <textarea id="content" rows="5"></textarea>  
-  </div>
-  <button id="submit">发表</button>
-</div>
+<div class="comment-list"></div>
 
     <script>
         // 创建星星
@@ -683,20 +653,17 @@ function generateTOC() {
     });
 }
 
-        function generateTOC() {
-  const content = editor.value;
-  const lines = content.split('\n');
-  const tocContent = 
-    document.getElementById('tocContent');
-  tocContent.innerHTML = '';
-  
-  lines.forEach(line => {
-    if (line.startsWith('##')) {
-      tocContent.innerHTML += 
-        `<div>${line.slice(2)}</div>`;
-    }
-  });
-}
+        function postComment() {
+    const editor = document.querySelector('.editor');
+    const comment = document.createElement('div');
+    comment.className = 'comment';
+    comment.innerHTML = editor.innerHTML;
+
+    const commentList = document.querySelector('.comment-list');
+    commentList.appendChild(comment);
+
+    editor.innerHTML = '';
+  }
 
         // 初始化
         createStars();

@@ -266,6 +266,10 @@
     outline: none;
   }
 
+        .comment-list {
+  margin-bottom: 20px;
+}
+        
   .comment {
     margin-top: 20px;
     border-top: 1px solid #ccc;
@@ -440,11 +444,11 @@
         </div>
     </div>
 
+    <div class="comment-list"></div>
     
   <div class="editor1" contenteditable="true"></div>
 <button onclick="postComment()">点击留言哦</button>
 
-    <div class="comment-list"></div>
 
     <script>
         // 创建星星
@@ -663,7 +667,7 @@ function generateTOC() {
     comment.innerHTML = editor.innerHTML;
 
     const commentList = document.querySelector('.comment-list');
-    commentList.insertBefore(comment, commentList.children[0]);
+    commentList.insertBefore(comment, commentList.firstChild);
 
     editor.innerHTML = '';
   }

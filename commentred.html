@@ -4,42 +4,62 @@
     <meta charset="utf-8">
     <title>小砖红的留言板</title>
        <style>
-    /* 整体容器样式 */
-    #cusdis_thread {
-        max-width: 500px;          /* 改小一点 */
-        min-height: 600px;         /* 加长 */
-        margin: 0 auto;            /* 上下边距改小 */
-        padding: 1.5rem;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* 输入框样式 */
-    #cusdis_thread textarea {
-        width: 100%;
-        min-height: 200px;         /* 文本框加长 */
-        padding: 1rem;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        font-size: 16px;
-    }
-
-    /* 昵称输入框 */
-    #cusdis_thread input {
-        width: 45%;               /* 输入框宽度改小 */
-        padding: 0.5rem 1rem;
-        border: 1px solid #eee;
-        border-radius: 6px;
-        margin-bottom: 1rem;
+    /* 导航栏样式 */
+    .nav {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        padding: 20px;
+        background: white;
+        border-bottom: 1px solid #eee;
     }
     
-    /* 页面背景 */
-    body {
-        background-color: #f5f5f5;
-        padding: 10px;            /* 页面边距减小 */
-        margin: 0;
+    .nav a {
+        color: #666;
+        text-decoration: none;
+    }
+
+    /* 页面内容样式 */
+    .content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.8;
+    }
+
+    /* 评论区样式 */
+    #cusdis_thread {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    /* 输入框统一样式 */
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    /* 页脚样式 */
+    .footer {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    /* Vercel按钮样式 */
+    .vercel-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: black;
+        color: white;
+        border-radius: 6px;
+        font-size: 14px;
     }
 </style>
 </head>

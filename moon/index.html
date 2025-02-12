@@ -145,7 +145,8 @@
     .initial-lanterns {
     position: fixed;
     top: 80px;  /* 调整整体位置 */
-    left: 50%;
+    left: 0;  /* 改为从左边开始 */
+    width: 100%;  /* 占满整个宽度 */
     transform: translateX(-50%);
     display: flex;
     gap: 40px;  /* 添加水平间距 */
@@ -166,19 +167,18 @@
     padding: 10px;
 }
 
-/* 分别设置三个灯笼的位置 */
 .initial-lanterns .initial-lantern:nth-child(1) {
-    left: 20%;  /* 左边的灯笼 */
+    left: 15%;  /* 靠左 */
     transform: translateY(20px);
 }
 
 .initial-lanterns .initial-lantern:nth-child(2) {
-    left: 50%;  /* 中间的灯笼 */
-    transform: translateX(-50%) translateY(60px);
+    left: 45%;  /* 偏左中间 */
+    transform: translateY(60px);
 }
 
 .initial-lanterns .initial-lantern:nth-child(3) {
-    left: 80%;  /* 右边的灯笼 */
+    left: 75%;  /* 靠右 */
     transform: translateY(40px);
 }
     </style>

@@ -142,41 +142,44 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-      .initial-lanterns {
-  position: fixed;
-  top: 80px;
-  left: 0;
-  width: 100%; 
-  display: flex;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-sizing: border-box;
+    .initial-lanterns {
+    position: fixed;
+    top: 80px;  /* 调整整体位置 */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;  /* 添加水平间距 */
 }
 
 .initial-lantern {
     position: fixed; 
-  width: 60px;
-  height: 84px;
-  background: rgba(255, 223, 186, 0.6);
-  border-radius: 30px 30px 8px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  font-size: 12px;
-  text-align: center;
-  padding: 10px;
+    width: 60px;
+    height: 84px;
+    background: rgba(255, 223, 186, 0.6);
+    border-radius: 30px 30px 8px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 12px;
+    text-align: center;
+    padding: 10px;
 }
-        .initial-lanterns .initial-lantern:nth-child(1) {
-  transform: translateY(20px);
+
+/* 分别设置三个灯笼的位置 */
+.initial-lanterns .initial-lantern:nth-child(1) {
+    left: 20%;  /* 左边的灯笼 */
+    transform: translateY(20px);
 }
 
 .initial-lanterns .initial-lantern:nth-child(2) {
-  transform: translateY(60px);
+    left: 50%;  /* 中间的灯笼 */
+    transform: translateX(-50%) translateY(60px);
 }
 
 .initial-lanterns .initial-lantern:nth-child(3) {
-  transform: translateY(40px);
+    left: 80%;  /* 右边的灯笼 */
+    transform: translateY(40px);
 }
     </style>
 </head>

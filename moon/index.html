@@ -48,10 +48,11 @@
             position: absolute;
             width: 80px;
             height: 112px;
-            bottom: -20%;
-    transform: translateY(100%);
-            animation: float 8s ease-in-out infinite;
-            transition: transform 0.3s;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 100%);
+            transition: transform 8s ease-out, opacity 8s;
+            opacity: 1;
         }
 
         .lantern-body {
@@ -89,11 +90,6 @@
             font-size: 14px;
             text-align: center;
             word-break: break-word;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-30px); }
         }
 
         .input-container {
@@ -204,8 +200,7 @@
 
             const lantern = document.createElement('div');
             lantern.className = 'lantern';
-            lantern.style.left = `${Math.random() * 80 + 10}%`;
-            lantern.style.animationDelay = `${Math.random() * 2}s`;
+            lantern.style.left = `${Math.random() * 100}%`;
 
             lantern.innerHTML = `
                 <div class="lantern-body">
@@ -219,9 +214,8 @@
             input.value = '';
 
             // 让天灯缓慢上升并淡出
-            lantern.style.transition = 'all 8s ease-out';
             setTimeout(() => {
-                lantern.style.transform = 'translateY(-120%)';
+                lantern.style.transform = 'translate(-50%, -100vh)';
                 lantern.style.opacity = '0';
             }, 100);
 

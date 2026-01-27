@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026深海都市艺术周历 | Deep Sea Nine Tiers Almanac</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-bg: #020617;
+            --tier-1: #06b6d4; /* 政府层-青 */
+            --tier-2: #8b5cf6; /* 资本家-紫 */
+            --tier-3: #10b981; /* 富人区-绿 */
+            --tier-4: #f59e0b; /* 共鸣者-金 */
+            --tier-5: #64748b; /* 办公区-灰 */
+            --tier-6: #3b82f6; /* 工人区-蓝 */
+            --tier-7: #ef4444; /* 苦力区-红 */
+            --tier-8: #6b7280; /* 鱼怪区-铅 */
+            --tier-9: #171717; /* 沉船区-黑 */
+            --neon-glow: 0 0 20px rgba(6, 182, 212, 0.5);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(180deg, #0f172a 0%, #020617 50%, #000000 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* 深海气泡动画背景 */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            animation: rise 15s infinite ease-in;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        /* 霓虹灯效果 */
+        .neon-border {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+        }
+
+        /* 水压玻璃效果 */
+        .pressure-glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* 季节主题色 */
+        .season-spring { --season-color: #34d399; --season-glow: rgba(52, 211, 153, 0.5); }
+        .season-summer { --season-color: #06b6d4; --season-glow: rgba(6, 182, 212, 0.5); }
+        .season-autumn { --season-color: #f97316; --season-glow: rgba(249, 115, 22, 0.5); }
+        .season-winter { --season-color: #8b5cf6; --season-glow: rgba(139, 92, 246, 0.5); }
+
+        .season-active {
+            border-color: var(--season-color);
+            box-shadow: 0 0 20px var(--season-glow);
+        }
+
+        /* 艺术品卡片悬停 */
+        .art-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .art-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .art-card:hover::before {
+            left: 100%;
+        }
+
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px var(--tier-glow, rgba(6,182,212,0.3));
+        }
+
+        /* 层级标签颜色 */
+        .tier-1 { --tier-glow: rgba(6, 182, 212, 0.5); border-color: #06b6d4; color: #06b6d4; }
+        .tier-2 { --tier-glow: rgba(139, 92, 246, 0.5); border-color: #8b5cf6; color: #8b5cf6; }
+        .tier-3 { --tier-glow: rgba(16, 185, 129, 0.5); border-color: #10b981; color: #10b981; }
+        .tier-4 { --tier-glow: rgba(245, 158, 11, 0.5); border-color: #f59e0b; color: #f59e0b; }
+        .tier-5 { --tier-glow: rgba(100, 116, 139, 0.5); border-color: #64748b; color: #64748b; }
+        .tier-6 { --tier-glow: rgba(59, 130, 246, 0.5); border-color: #3b82f6; color: #3b82f6; }
+        .tier-7 { --tier-glow: rgba(239, 68, 68, 0.5); border-color: #ef4444; color: #ef4444; }
+        .tier-8 { --tier-glow: rgba(107, 114, 128, 0.5); border-color: #6b7280; color: #6b7280; }
+        .tier-9 { --tier-glow: rgba(23, 23, 23, 0.5); border-color: #525252; color: #a3a3a3; }
+
+        /* 手帐纸张纹理 */
+        .paper-texture {
+            background-color: #fef3c7;
+            background-image: 
+                repeating-linear-gradient(transparent, transparent 31px, #d1d5db 31px, #d1d5db 32px),
+                repeating-linear-gradient(90deg, transparent, transparent 31px, #e5e7eb 31px, #e5e7eb 32px);
+            color: #1f2937;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+            border: 2px solid #0f172a;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+
+        /* 详情模态框动画 */
+        .modal-enter {
+            animation: modalSlide 0.3s ease-out;
+        }
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(50px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* 响应式网格 */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .week-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 当前周高亮 */
+        .current-week {
+            border: 2px solid #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+            animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 50px rgba(245, 158, 11, 0.6); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 深海气泡背景 -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 pressure-glass border-b border-cyan-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="waves" class="w-8 h-8 text-cyan-400 animate-pulse"></i>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-wider text-cyan-100 serif">
+                            深海都市<span class="text-cyan-400 neon-text">2026</span>
+                        </h1>
+                        <p class="text-xs text-cyan-600 mono">DEEP SEA NINE TIERS ALMANAC</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm mono">
+                    <button onclick="scrollToSection('calendar')" class="hover:text-cyan-400 transition-colors">周历档案</button>
+                    <button onclick="scrollToSection('seasons')" class="hover:text-cyan-400 transition-colors">季节深潜</button>
+                    <button onclick="scrollToSection('handbook')" class="hover:text-cyan-400 transition-colors">手帐指南</button>
+                    <div class="text-cyan-600" id="current-date"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 px-4 overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-400 text-sm mono tracking-widest">
+                SYSTEM: GINIOS CULTURAL ARCHIVE
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 serif leading-tight">
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 neon-text">
+                    深海都市
+                </span>
+                <span class="block text-2xl md:text-4xl mt-2 text-slate-300 font-light">
+                    艺术周历 <span class="text-cyan-500">2026</span>
+                </span>
+            </h1>
+            <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+                穿越九层水压，每周邂逅2-3件真实的世界级海洋艺术品。<br>
+                从Turner的暴风雨到Haeckel的水母，从莫切陶器到Blaschka玻璃——<br>
+                <span class="text-cyan-400">在艺术的深渊里，重建你的深海都市。</span>
+            </p>
+            
+            <!-- 季节快速跳转 -->
+            <div class="flex flex-wrap justify-center gap-4 mt-8" id="season-tabs">
+                <button onclick="filterSeason('spring')" class="season-btn px-6 py-3 rounded-lg border border-green-500/30 bg-green-900/20 text-green-400 hover:bg-green-900/40 transition-all season-spring" data-season="spring">
+                    <div class="text-xs mono mb-1">TIER 1-3</div>
+                    <div class="font-bold">春 · 表层复苏</div>
+                </button>
+                <button onclick="filterSeason('summer')" class="season-btn px-6 py-3 rounded-lg border border-cyan-500/30 bg-cyan-900/20 text-cyan-400 hover:bg-cyan-900/40 transition-all season-summer" data-season="summer">
+                    <div class="text-xs mono mb-1">TIER 4-5</div>
+                    <div class="font-bold">夏 · 繁生共鸣</div>
+                </button>
+                <button onclick="filterSeason('autumn')" class="season-btn px-6 py-3 rounded-lg border border-orange-500/30 bg-orange-900/20 text-orange-400 hover:bg-orange-900/40 transition-all season-autumn" data-season="autumn">
+                    <div class="text-xs mono mb-1">TIER 6-7</div>
+                    <div class="font-bold">秋 · 沉降劳作</div>
+                </button>
+                <button onclick="filterSeason('winter')" class="season-btn px-6 py-3 rounded-lg border border-purple-500/30 bg-purple-900/20 text-purple-400 hover:bg-purple-900/40 transition-all season-winter" data-season="winter">
+                    <div class="text-xs mono mb-1">TIER 8-9</div>
+                    <div class="font-bold">冬 · 极渊沉船</div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 周历主体 -->
+    <main class="max-w-7xl mx-auto px-4 pb-20" id="calendar">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold serif text-cyan-100 flex items-center gap-3">
+                <i data-lucide="calendar" class="text-cyan-400"></i>
+                年度深潜计划
+            </h2>
+            <div class="flex gap-2 text-sm mono">
+                <span class="px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400">共计 100 件艺术品</span>
+                <span class="px-3 py-1 rounded bg-cyan-900/30 border border-cyan-700 text-cyan-400">52 周</span>
+            </div>
+        </div>
+
+        <!-- 周历网格 -->
+        <div id="week-container" class="week-grid">
+            <!-- JavaScript将在这里生成内容 -->
+        </div>
+    </main>
+
+    <!-- 手帐制作指南 -->
+    <section id="handbook" class="py-20 bg-slate-900/50 border-t border-slate-800">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold serif text-amber-100 mb-4">深海手帐制作协议</h2>
+                <p class="text-slate-400 mono">ARCHIVE_CREATION_MANUAL_v2026</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 步骤指南 -->
+                <div class="space-y-6">
+                    <div class="pressure-glass rounded-xl p-6 border border-cyan-800/50">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold border border-cyan-500/50">01</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-cyan-100 mb-2">AI 深潜调研</h3>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    使用 AI 工具查询当周艺术品的<span class="text-cyan-400">创作背景</span>、<span class="text-cyan-400">艺术家生卒年份</span>、<span class="text-cyan-400">馆藏位置</span>。
+                                    建议搜索："Artemision Bronze 考古发现故事"、"Haeckel 生物图鉴科学价值"等深度信息。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pressure-glass rounded-xl p-6 border border-purple-800/50">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold border border-purple-500/50">02</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-purple-100 mb-2">实体化印刷</h3>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    推荐 <span class="text-purple-400">和纸</span> 或 <span class="text-purple-400">硫酸纸</span> 打印艺术品图片，营造深海透光感。
+                                    文字解释建议使用 <span class="text-purple-400">牛皮纸标签机</span> 打印，增加博物馆标签质感。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pressure-glass rounded-xl p-6 border border-pink-800/50">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 font-bold border border-pink-500/50">03</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-pink-100 mb-2">二次创作区</h3>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    在打印图上进行<span class="text-pink-400">赛博朋克涂鸦</span>：添加霓虹灯管线条、电路板纹理、深压水纹。
+                                    或用<span class="text-pink-400">拼贴</span>方式加入：深海生物解剖图、旧报纸碎片、金属箔片。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pressure-glass rounded-xl p-6 border border-amber-800/50">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold border border-amber-500/50">04</div>
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-100 mb-2">诗歌植入</h3>
+                                <p class="text-sm text-slate-400 leading-relaxed">
+                                    在页面空白处手写一首十四行诗或自由诗，主题对应：
+                                    <span class="text-amber-400">"该艺术品在深海都市第 X 层的投射"</span>。
+                                    例如：Turner的船难画对应第九层沉船区的居民记忆。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 手帐示例展示 -->
+                <div class="paper-texture rounded-xl p-8 relative transform rotate-1 hover:rotate-0 transition-transform duration-500 shadow-2xl">
+                    <div class="absolute -top-3 -right-3 w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg transform rotate-12">
+                        SAMPLE
+                    </div>
+                    
+                    <div class="border-b-2 border-slate-800/20 pb-4 mb-6">
+                        <div class="text-xs text-slate-500 mono mb-1">WEEK 23 | SUMMER</div>
+                        <h3 class="text-2xl font-bold text-slate-800 serif">Haeckel 的辐射虫</h3>
+                        <div class="text-sm text-slate-600 mt-2"> Ernst Haeckel, 1862 | Kunstmuseum</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white/50 border border-slate-300 h-32 flex items-center justify-center text-slate-400 text-xs">
+                            [ 水母插图粘贴处 ]
+                        </div>
+                        <div class="space-y-2 text-xs text-slate-700 leading-relaxed font-mono">
+                            <p>层级映射：第4层 共鸣者</p>
+                            <p>生物发光 = 语义电梯的照明</p>
+                            <p>几何形态 = 声波巷的建筑结构</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-400/30 pt-4">
+                        <div class="text-xs text-slate-500 mb-2 italic">诗歌草稿区：</div>
+                        <p class="text-sm text-slate-800 leading-loose font-serif handwritten" style="font-family: 'Noto Serif SC', serif;">
+                            在第四层的玻璃穹顶下<br>
+                            你的骨骼是透明的电梯<br>
+                            载着没有重量的语言<br>
+                            向下，再向下<br>
+                            沉向那个永不抵达的<br>
+                            第九层...
+                        </p>
+                    </div>
+
+                    <div class="mt-6 flex gap-2">
+                        <span class="px-2 py-1 bg-cyan-100 text-cyan-800 text-xs rounded">#生物图鉴</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">#第4层</span>
+                        <span class="px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded">#共鸣者</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 推荐工具清单 -->
+            <div class="mt-12 pressure-glass rounded-xl p-8 border border-cyan-900/50">
+                <h3 class="text-xl font-bold text-cyan-100 mb-6 flex items-center gap-2">
+                    <i data-lucide="tool" class="text-cyan-400"></i>
+                    深海手帐装备清单
+                </h3>
+                <div class="grid md:grid-cols-4 gap-6 text-sm">
+                    <div class="space-y-2">
+                        <div class="font-bold text-cyan-400">基础层</div>
+                        <ul class="space-y-1 text-slate-400">
+                            <li>• A5 活页手帐本（耐压皮面）</li>
+                            <li>• 黑色防水墨水笔</li>
+                            <li>• 金属色马克笔（金/银/铜）</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-bold text-purple-400">素材层</div>
+                        <ul class="space-y-1 text-slate-400">
+                            <li>• 硫酸纸/描图纸</li>
+                            <li>• 旧报纸/古籍残页</li>
+                            <li>• 铝箔纸（模拟金属质感）</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-bold text-pink-400">装饰层</div>
+                        <ul class="space-y-1 text-slate-400">
+                            <li>• 透明水母贴纸</li>
+                            <li>• 电路板胶带</li>
+                            <li>• 荧光色便利贴</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-bold text-amber-400">数字化</div>
+                        <ul class="space-y-1 text-slate-400">
+                            <li>• 博物馆高清图库账号</li>
+                            <li>• 便携式照片打印机</li>
+                            <li>• OCR识别软件（整理诗歌）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 详情模态框 -->
+    <div id="artwork-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-black/80 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom pressure-glass rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full modal-enter border border-cyan-500/30">
+                <div id="modal-content">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // 生成背景气泡
+        function createBubbles() {
+            const container = document.getElementById('bubbles');
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.width = bubble.style.height = Math.random() * 50 + 20 + 'px';
+                bubble.style.animationDelay = Math.random() * 15 + 's';
+                bubble.style.animationDuration = Math.random() * 10 + 10 + 's';
+                container.appendChild(bubble);
+            }
+        }
+        createBubbles();
+
+        // 艺术品数据库（100件，按季节和层级分配）
+        const artworks = [
+            // 春季（第1-13周）：表层与初生 - 主要对应第1-3层
+            { week: 1, season: 'spring', title: "美杜莎之筏", artist: "Théodore Géricault", year: "1819", museum: "卢浮宫", tier: 1, desc: "浪漫主义巨作，木筏上的人群挣扎求生，映射第一层深压厅的权力挣扎。", image: "raft_medusa" },
+            { week: 1, season: 'spring', title: "神奈川冲浪里", artist: "葛饰北斋", year: "1830", museum: "大都会博物馆", tier: 1, desc: "浮世绘巨浪，表层海水的暴力美学，第一层的波涛穹顶。", image: "great_wave" },
+            
+            { week: 2, season: 'spring', title: "印象·日出", artist: "Claude Monet", year: "1872", museum: "马莫丹美术馆", tier: 2, desc: "勒阿弗尔港的晨光，珊瑚银行带的泡沫与光线折射。", image: "impression_sunrise" },
+            { week: 2, season: 'spring', title: "Artemision 海神青铜像", artist: "古希腊佚名", year: "公元前460年", museum: "雅典国家考古博物馆", tier: 1, desc: "手持三叉戟的青铜宙斯/波塞冬，深海政府的权力象征。", image: "artemision" },
+            
+            { week: 3, season: 'spring', title: "墨西哥湾流", artist: "Winslow Homer", year: "1899", museum: "大都会博物馆", tier: 3, desc: "黑人与鲨鱼的僵持，第三层海象庭院层的生存隐喻。", image: "gulf_stream" },
+            { week: 3, season: 'spring', title: "平静的海", artist: "Gustave Courbet", year: "1869", museum: "大都会博物馆", tier: 3, desc: "现实主义的深蓝海面，富人区过滤后的宁静海水。", image: "calm_sea" },
+            
+            { week: 4, season: 'spring', title: "战斗的泰梅雷尔号", artist: "J.M.W. Turner", year: "1839", museum: "英国国家美术馆", tier: 1, desc: "蒸汽拖船拖动古战舰，旧制度向新秩序的过渡，深压厅的权力交接。", image: "temeraire" },
+            { week: 4, season: 'spring', title: "特雷维喷泉尼普顿群雕", artist: "Nicola Salvi等", year: "1762", museum: "罗马特雷维喷泉", tier: 2, desc: "巴洛克海神战车，珊瑚银行带的资本喷泉。", image: "trevi" },
+            
+            { week: 5, season: 'spring', title: "雾警告", artist: "Winslow Homer", year: "1885", museum: "波士顿美术馆", tier: 3, desc: "渔夫与雾中警告，第三层过滤海水的监控者。", image: "fog_warning" },
+            { week: 5, season: 'spring', title: "富岳三十六景·甲州石泽", artist: "葛饰北斋", year: "1830", museum: "大英博物馆", tier: 1, desc: "富士山与海浪的构图，第一层鲸骨穹顶的结构性景观。", image: "fuji" },
+            
+            { week: 6, season: 'spring', title: "尼普顿的愤怒", artist: "Tiziano Minio", year: "1550", museum: "克利夫兰艺术博物馆", tier: 1, desc: "青铜海神狂怒像，深压厅的统治威严。", image: "neptune_anger" },
+            { week: 6, season: 'spring', title: "拉哈弗低潮时的海维角", artist: "Claude Monet", year: "1865", museum: "金贝尔艺术博物馆", tier: 2, desc: "诺曼底海岸礁石，珊瑚银行的原始积累景观。", image: "heve" },
+            
+            { week: 7, season: 'spring', title: "第九浪", artist: "Ivan Aivazovsky", year: "1850", museum: "俄罗斯国家博物馆", tier: 3, desc: "海难幸存者面对巨浪，第三层富人面对自然压力的脆弱。", image: "ninth_wave" },
+            { week: 7, season: 'spring', title: "纳沃纳广场尼普顿喷泉", artist: "Giacomo della Porta", year: "1574", museum: "罗马纳沃纳广场", tier: 2, desc: "海神战章鱼雕塑，资本与自然的古老战争。", image: "navona" },
+            
+            { week: 8, season: 'spring', title: "海边的僧侣", artist: "Caspar David Friedrich", year: "1810", museum: "柏林国家美术馆", tier: 3, desc: "孤独修士面对无限沧海，海象庭院层的存在主义孤独。", image: "monk_sea" },
+            { week: 8, season: 'spring', title: "莲池水禽图", artist: "顾德谦（传）", year: "南宋13世纪", museum: "东京国立博物馆", tier: 3, desc: "中国宋代水禽嬉戏，第三层过滤池塘的东方园林。", image: "lotus_birds" },
+            
+            { week: 9, season: 'spring', title: "暴风雨（船难）", artist: "J.M.W. Turner", year: "1823", museum: "大英博物馆", tier: 1, desc: "透纳早期海难，第一层穹顶外的原始混乱。", image: "shipwreck_turner" },
+            { week: 9, season: 'spring', title: "Bernini 尼普顿喷泉雕塑", artist: "Gian Lorenzo Bernini", year: "1620", museum: "博洛尼亚", tier: 2, desc: "巴洛克海神肌肉爆发，资本的原始力量展示。", image: "bernini_neptune" },
+            
+            { week: 10, season: 'spring', title: "海", artist: "Gustave Courbet", year: "1865", museum: "大都会博物馆", tier: 3, desc: "深色厚重海浪，现实主义的深海压力体验。", image: "courbet_sea" },
+            { week: 10, season: 'spring', title: "加利福尼亚 state调情", artist: "Winslow Homer", year: "1875", museum: "私人收藏", tier: 3, desc: "人与自然的暧昧互动，海象庭院的休闲时刻。", image: "homer_flirt" },
+            
+            { week: 11, season: 'spring', title: "东北风", artist: "Winslow Homer", year: "1895", museum: "大都会博物馆", tier: 1, desc: "缅因州海岸风暴，第一层边缘的恶劣天气。", image: "northeaster" },
+            { week: 11, season: 'spring', title: "黑斯廷斯船难", artist: "J.M.W. Turner", year: "1825", museum: "爱尔兰国家美术馆", tier: 2, desc: "月光下的沉船场景，资本扩张的牺牲者。", image: "hastings_wreck" },
+            
+            { week: 12, season: 'spring', title: "唐璜之船难", artist: "Eugène Delacroix", year: "1840", museum: "卢浮宫", tier: 3, desc: "浪漫主义色彩爆炸，第三层的戏剧性生活。", image: "don_juan" },
+            { week: 12, season: 'spring', title: "挪威海岸船难", artist: "Johan Christian Dahl", year: "1831", museum: "丹麦国家美术馆", tier: 2, desc: "北欧浪漫主义海难，资本探险的北方边界。", image: "dahl_wreck" },
+            
+            { week: 13, season: 'spring', title: "彩虹", artist: "Ivan Aivazovsky", year: "1873", museum: "俄罗斯国家博物馆", tier: 3, desc: "风暴后的海难Rainbow，第三层的希望幻觉。", image: "rainbow_aivazovsky" },
+            { week: 13, season: 'spring', title: "带灯塔的暴风雨海面", artist: "Carl Blechen", year: "1820", museum: "柏林国家美术馆", tier: 1, desc: "灯塔照亮巨浪，深压厅的指引系统。", image: "blechen_lighthouse" },
+
+            // 夏季（第14-26周）：繁生与共鸣 - 主要对应第4-5层
+            { week: 14, season: 'summer', title: "花水母 (Anthomedusae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "语义电梯的生物发光原型，第四层共鸣者的照明系统。", image: "haeckel_antho" },
+            { week: 14, season: 'summer', title: "褶水母 (Leptomedusae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "声波巷的建筑结构灵感来源，透明振动美学。", image: "haeckel_lepto" },
+            
+            { week: 15, season: 'summer', title: "盘水母 (Discomedusae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "巨型圆盘水母，音乐小镇的广场穹顶设计。", image: "haeckel_discomed" },
+            { week: 15, season: 'summer', title: "管水母 (Siphonophorae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "群体共生生物，共鸣者社区的社会结构隐喻。", image: "haeckel_sipho" },
+            
+            { week: 16, season: 'summer', title: "栉水母 (Ctenophorae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "发光栉板，声波巷的霓虹灯管原型。", image: "haeckel_cteno" },
+            { week: 16, season: 'summer', title: "箱水母 (Cubomedusae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 5, desc: "立方体剧毒水母，第五层办公区的几何化危险。", image: "haeckel_cubo" },
+            
+            { week: 17, season: 'summer', title: "头足纲章鱼 (Gamochonia)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 5, desc: "触手矩阵，潮汐格子间的数据电缆形态。", image: "haeckel_octopus" },
+            { week: 17, season: 'summer', title: "放射虫 (Thalamophora)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 4, desc: "硅质骨骼几何体，音乐小镇的装饰艺术源泉。", image: "haeckel_radio" },
+            
+            { week: 18, season: 'summer', title: "Asmat 比斯吉柱", artist: "Asmat族佚名", year: "20世纪", museum: "大都会博物馆", tier: 4, desc: "新几内亚纪念柱，共鸣者的声波纪念碑。", image: "asmat_bisj" },
+            { week: 18, season: 'summer', title: "Asmat 精神独木舟", artist: "Asmat族佚名", year: "20世纪", museum: "大都会博物馆", tier: 4, desc: "冥界航行载具，第四层通往更深层的交通工具。", image: "asmat_canoe" },
+            
+            { week: 19, season: 'summer', title: "Kwoma 绘画面板", artist: "Kwoma族佚名", year: "1970-73", museum: "大都会博物馆", tier: 4, desc: "部落自绘图腾，音乐小镇的DIY文化前身。", image: "kwoma_panel" },
+            { week: 19, season: 'summer', title: "所罗门群岛雕刻船首", artist: "所罗门佚名", year: "19世纪", museum: "大都会博物馆", tier: 5, desc: "鲨鱼形态船首，办公区的勇猛象征。", image: "solomon_prow" },
+            
+            { week: 20, season: 'summer', title: "马绍尔群岛导航图", artist: "马绍尔佚名", year: "19世纪", museum: "大都会博物馆", tier: 5, desc: "珊瑚环礁海图，第五层数据藻田区的地图学。", image: "marshall_chart" },
+            { week: 20, season: 'summer', title: "巨型裂鼓", artist: "所罗门群岛佚名", year: "19世纪", museum: "大都会博物馆", tier: 4, desc: "声波传讯乐器，共鸣者音乐的物理基础。", image: "slit_drum" },
+            
+            { week: 21, season: 'summer', title: "海龟壳面具", artist: "沿海部落佚名", year: "19世纪", museum: "大都会博物馆", tier: 5, desc: "海洋图腾面具，办公区的仪式化伪装。", image: "turtle_mask" },
+            { week: 21, season: 'summer', title: "头骨圣物箱", artist: "海洋部落佚名", year: "19世纪", museum: "大都会博物馆", tier: 4, desc: "海猎文化纪念物，共鸣者的死亡美学。", image: "skull_shrine" },
+            
+            { week: 22, season: 'summer', title: "装饰桨", artist: "太平洋岛民佚名", year: "19世纪", museum: "大都会博物馆", tier: 5, desc: "航海艺术工具，数据处理的仪式化器具。", image: "decorated_paddle" },
+            { week: 22, season: 'summer', title: "Blaschka 玻璃水母模型", artist: "Leopold & Rudolf Blaschka", year: "1880", museum: "哈佛自然历史博物馆", tier: 4, desc: "玻璃吹制的深海生物，透明与脆弱的美学。", image: "blaschka_jelly" },
+            
+            { week: 23, season: 'summer', title: "Blaschka 玻璃海葵模型", artist: "Blaschka父子", year: "1880", museum: "哈佛自然历史博物馆", tier: 4, desc: "触手玻璃花，音乐小镇的装饰品。", image: "blaschka_anemone" },
+            { week: 23, season: 'summer', title: "Constant Roux 水母吊灯", artist: "Constant Roux", year: "1900", museum: "摩纳哥海洋研究所", tier: 5, desc: "受Haeckel启发的奢侈品，办公区的照明系统。", image: "roux_lamp" },
+            
+            { week: 24, season: 'summer', title: "Hendrik Berlage 水母吊灯", artist: "Hendrik Berlage", year: "1903", museum: "阿姆斯特丹", tier: 4, desc: "新艺术运动深海灯具，共鸣者的家用照明。", image: "berlage_lamp" },
+            { week: 24, season: 'summer', title: "René Binet 放射虫纪念门", artist: "René Binet", year: "1900", museum: "巴黎世博会", tier: 4, desc: "受放射虫启发的建筑入口，音乐小镇的城门设计。", image: "binet_gate" },
+            
+            { week: 25, season: 'summer', title: "柴犬Victorian水族馆内部", artist: "英国佚名", year: "1870", museum: "斯卡伯勒美术馆", tier: 5, desc: "维多利亚时代水族馆，第五层的公共建筑原型。", image: "aquarium_interior" },
+            { week: 25, season: 'summer', title: "Brighton Aquarium 建筑图", artist: "Eugenius Birch", year: "1872", museum: "英国国家档案馆", tier: 5, desc: "印度寺庙风格海底建筑，潮汐格子间的建筑风格。", image: "brighton_aqua" },
+            
+            { week: 26, season: 'summer', title: "Henri Riviere 美丽岛", artist: "Henri Riviere", year: "1910", museum: "法国国家图书馆", tier: 4, desc: "布列塔尼海岸水彩，共鸣者的度假胜地。", image: "riviere_belle" },
+
+            // 秋季（第27-39周）：沉降与劳作 - 主要对应第6-7层
+            { week: 27, season: 'autumn', title: "唐璜之船难局部", artist: "Eugène Delacroix", year: "1840", museum: "卢浮宫", tier: 6, desc: "浪漫主义海难细节，第六层数据藻田区的混乱数据源。", image: "delacroix_detail" },
+            { week: 27, season: 'autumn', title: "西西里海岸放晴", artist: "Andreas Achenbach", year: "1847", museum: "沃尔特斯艺术博物馆", tier: 6, desc: "风暴过后的劳作场景，种关键词的工人休息时刻。", image: "achenbach_sicily" },
+            
+            { week: 28, season: 'autumn', title: "拉尔维克附近海岸船难", artist: "Johan Christian Dahl", year: "1836", museum: "丹麦国家美术馆", tier: 7, desc: "北欧黑色浪漫，排泡通道带的危险工作环境。", image: "dahl_larvik" },
+            { week: 28, season: 'autumn', title: "失事船只素描", artist: "Johan Christian Dahl", year: "1843", museum: "KODE博物馆", tier: 7, desc: "钢笔素描残骸，信息模块的破损形态。", image: "dahl_sketch" },
+            
+            { week: 29, season: 'autumn', title: "疏离的船", artist: "Robert Caney", year: "1900", museum: "KODE博物馆", tier: 6, desc: "水彩搁浅船只，数据藻田区的废弃模块。", image: "caney_stranded" },
+            { week: 29, season: 'autumn', title: "水下场景", artist: "Robert Caney", year: "1900", museum: "美国国家美术馆", tier: 6, desc: "水彩水下光影，海藻种植园的现场记录。", image: "caney_underwater" },
+            
+            { week: 30, season: 'autumn', title: "莫切文化蜥蜴斯蒂鲁普瓶", artist: "莫切佚名", year: "300-500 CE", museum: "秘鲁考古博物馆", tier: 7, desc: "两栖生物崇拜，苦力工的图腾信仰。", image: "moche_lizard" },
+            { week: 30, season: 'autumn', title: "莫切文化螃蟹陶罐", artist: "莫切佚名", year: "300-500 CE", museum: "哈佛自然历史博物馆", tier: 6, desc: "巨蟹人神战斗，数据藻田区的生态保护神话。", image: "moche_crab" },
+            
+            { week: 31, season: 'autumn', title: "莫切文化海狮形陶器", artist: "莫切佚名", year: "300-500 CE", museum: "秘鲁", tier: 6, desc: "海洋哺乳动物容器，装载关键词的器具。", image: "moche_sealion" },
+            { week: 31, season: 'autumn', title: "莫切文化海鸟主题陶器", artist: "莫切佚名", year: "300-500 CE", museum: "秘鲁", tier: 7, desc: "信天翁与鹈鹕，排泡通道的监视者。", image: "moche_bird" },
+            
+            { week: 32, season: 'autumn', title: "古代秘鲁海怪纺织品", artist: "莫切/Chimu佚名", year: "前哥伦布时期", museum: "利马博物馆", tier: 7, desc: "刺绣深海怪物，苦力工的噩梦图腾。", image: "textile_monster" },
+            { week: 32, season: 'autumn', title: "古埃及变型海怪陶片", artist: "古埃及佚名", year: "前5世纪", museum: "大英博物馆", tier: 6, desc: "尼罗河海怪神话，修语料生产线的古老原型。", image: "egypt_monster" },
+            
+            { week: 33, season: 'autumn', title: "景风雨信使邮票", artist: "Karshan Designs", year: "2020", museum: "大英图书馆", tier: 6, desc: "现代海洋邮政艺术，数据传输的视觉化。", image: "stamp_storm" },
+            { week: 33, season: 'autumn', title: "英式邮筒上的手机", artist: "Karshan Designs", year: "2020", museum: "大英图书馆", tier: 6, desc: "通讯技术拼贴，语料生产的现代性。", image: "stamp_postbox" },
+            
+            { week: 34, season: 'autumn', title: "金规则", artist: "Fitz Henry Lane", year: "1850", museum: "私人收藏", tier: 6, desc: "快艇肖像，数据运输工具的美学。", image: "lane_rule" },
+            { week: 34, season: 'autumn', title: "避风港", artist: "Fitz Henry Lane", year: "1860", museum: "美国国家美术馆", tier: 6, desc: "港湾平静，藻田区的安全区域。", image: "lane_shelter" },
+            
+            { week: 35, season: 'autumn', title: "C.C. Chapman海上救援", artist: "Antonio Jacobsen", year: "1917", museum: "海事博物馆", tier: 7, desc: "救援场景，排泡通道的紧急维护。", image: "jacobsen_rescue" },
+            { week: 35, season: 'autumn', title: "Samuel J. Goucher号纵帆船", artist: "Samuel S. Badger", year: "1909", museum: "Peabody博物馆", tier: 7, desc: "运输船肖像，信息模块搬运工。", image: "badger_schooner" },
+            
+            { week: 36, season: 'autumn', title: "海上日落", artist: "John Frederick Kensett", year: "1872", museum: "大都会博物馆", tier: 6, desc: "哈德逊河画派海洋，藻田区的黄昏照明。", image: "kensett_sunset" },
+            { week: 36, season: 'autumn', title: "地中海傍晚", artist: "Emanuel Larsen", year: "1854", museum: "丹麦国家美术馆", tier: 6, desc: "丹麦浪漫主义海港，工作的终结时刻。", image: "larsen_medi" },
+
+            // 冬季（第40-52周）：极渊与沉船 - 主要对应第8-9层
+            { week: 37, season: 'winter', title: "奴隶船", artist: "J.M.W. Turner", year: "1840", museum: "波士顿美术馆", tier: 9, desc: "将死奴隶与食人鱼，第九层沉船区的死亡工业。", image: "turner_slave" },
+            { week: 37, season: 'winter', title: "暴风雪：蒸汽船离港", artist: "J.M.W. Turner", year: "1842", museum: "泰特美术馆", tier: 8, desc: "蒸汽与自然搏斗，鱼怪区的混乱能量。", image: "turner_snow" },
+            
+            { week: 38, season: 'winter', title: "船难", artist: "J.M.W. Turner", year: "1805", museum: "泰特美术馆", tier: 9, desc: "透纳早期沉船，沉船区的日常景观。", image: "turner_wreck_1805" },
+            { week: 38, season: 'winter', title: "暴风雨中的沉船", artist: "J.M.W. Turner", year: "1825", museum: "泰特美术馆", tier: 9, desc: "月光下的残骸，第九层的无电照明。", image: "turner_wreck_night" },
+            
+            { week: 39, season: 'winter', title: "Flora号船难", artist: "Ivan Aivazovsky", year: "1852", museum: "俄罗斯国家博物馆", tier: 9, desc: "月光海难全景，被遗忘者的集体记忆。", image: "aivazovsky_flora" },
+            { week: 39, season: 'winter', title: "船难受害者", artist: "Ivan Aivazovsky", year: "1852", museum: "俄罗斯国家博物馆", tier: 9, desc: "漂流者的最后时刻，沉船区居民的现状。", image: "aivazovsky_victims" },
+            
+            { week: 40, season: 'winter', title: "菊石 (Ammonitida)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 9, desc: "已灭绝的螺旋化石，第九层的时间感。", image: "haeckel_ammonite" },
+            { week: 40, season: 'winter', title: "海参 (Thuroidea)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen der Natur", tier: 8, desc: "深海底栖生物，鱼怪区的清洁者。", image: "haeckel_seacucumber" },
+            
+            { week: 41, season: 'winter', title: "深海鮟鱇鱼 (Melanocetus)", artist: "科学插图", year: "20世纪", museum: "哈佛自然历史博物馆", tier: 9, desc: "灯笼鱼深渊种，沉船区的照明者。", image: "anglerfish" },
+            { week: 41, season: 'winter', title: "龙鱼拓印", artist: "Dwight Hwang", year: "2023", museum: "NHM", tier: 8, desc: "深海鱼拓印艺术，鱼怪区的原始绘画。", image: "hwang_dragon" },
+            
+            { week: 42, season: 'winter', title: "足球鱼拓印", artist: "Dwight Hwang", year: "2023", museum: "NHM", tier: 9, desc: "太平洋深海鱼，被遗忘者的食物来源。", image: "hwang_football" },
+            { week: 42, season: 'winter', title: "巨型鱿鱼触须与喙", artist: "标本", year: "现代", museum: "哈佛比较动物学博物馆", tier: 8, desc: "Architeuthis残骸，封闭逻辑区的守护者。", image: "squid_beak" },
+            
+            { week: 43, season: 'winter', title: "Johnson's Abyssal Seadevil", artist: "科学插图", year: "1930", museum: "哈佛", tier: 9, desc: "深海鮟鱇插图，沉船区的恐怖美学。", image: "johnson_seadevil" },
+            { week: 43, season: 'winter', title: "谦逊深渊魔鬼鱼标本", artist: "标本", year: "现代", museum: "哈佛", tier: 8, desc: "Melanocetus johnsonii，鱼怪区的居民。", image: "johnsonii" },
+            
+            { week: 44, season: 'winter', title: "1750年格里高利反射望远镜", artist: "犹太工匠", year: "1750", museum: "哈佛仪器收藏", tier: 8, desc: "装饰海蛇的科学仪器，鱼怪区的科技观。", image: "gregorian_scope" },
+            { week: 44, season: 'winter', title: "科学仪器中的海蛇装饰", artist: "欧洲工匠", year: "18世纪", museum: "哈佛收藏", tier: 8, desc: "航海仪器上的神话生物，标准皮肤的原型。", image: "instrument_seaserpent" },
+            
+            { week: 45, season: 'winter', title: "挑战者号远征插图", artist: "挑战者号报告", year: "1877", museum: "英国自然历史博物馆", tier: 9, desc: "首次深海探险记录，沉船区的发现史。", image: "challenger_expedition" },
+            { week: 45, season: 'winter', title: "南极章鱼插图", artist: "Fritz Winter", year: "1903", museum: "德国深海探险队", tier: 8, desc: "极地深海软体动物，低温计算的象征。", image: "winter_octopus" },
+            
+            { week: 46, season: 'winter', title: "拿破仑鳍鱼 Lithograph", artist: "未知", year: "1859", museum: "大英图书馆", tier: 8, desc: "史前鱼化石，封闭逻辑区的历史记忆。", image: "diamond_fish" },
+            { week: 46, season: 'winter', title: "海神忒提斯马赛克", artist: "罗马佚名", year: "4世纪", museum: "哈佛商学院", tier: 9, desc: "安条克马赛克，沉船区的古典记忆。", image: "mosaic_thetys" },
+            
+            { week: 47, season: 'winter', title: "罗马尼普顿马赛克", artist: "罗马佚名", year: "4世纪", museum: "突尼斯Bardo", tier: 8, desc: "非洲罗马海神，帝国边缘的算法。", image: "mosaic_neptune_afro" },
+            { week: 47, season: 'winter', title: "罗马场景马赛克", artist: "罗马佚名", year: "175 CE", museum: "盖蒂博物馆", tier: 9, desc: "海底生物场景，被遗忘的繁华。", image: "mosaic_getty" },
+            
+            { week: 48, season: 'winter', title: "俄耳甫斯与动物马赛克", artist: "罗马佚名", year: "4世纪", museum: "Saint-Romain-en-Gal", tier: 9, desc: "音乐家的深海驯服，沉船区的艺术。", image: "mosaic_orpheus" },
+            { week: 48, season: 'winter', title: "海星 (Asteridea)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen", tier: 8, desc: "五辐对称生物，鱼怪区的几何崇拜。", image: "haeckel_starfish" },
+            
+            { week: 49, season: 'winter', title: "十足目 (Decapoda)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen", tier: 8, desc: "甲壳类矩阵，标准化生产的生物原型。", image: "haeckel_decapod" },
+            { week: 49, season: 'winter', title: "海鞘 (Ascidiae)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen", tier: 8, desc: "被囊动物，无情感模型的包裹。", image: "haeckel_ascidia" },
+            
+            { week: 50, season: 'winter', title: "有孔虫 (Thalamophora)", artist: "Ernst Haeckel", year: "1904", museum: "Kunstformen", tier: 9, desc: "单细胞钙质壳，沉船区的微观居民。", image: "haeckel_foraminifera" },
+            { week: 50, season: 'winter', title: "深海热喷口生物摄影", artist: "现代摄影师", year: "2020", museum: "AMNH", tier: 9, desc: "化学合成生态系统，无电无算法的生命。", image: "vent_creatures" },
+            
+            { week: 51, season: 'winter', title: "Vincent Figgins Type Specimen", artist: "Vincent Figgins", year: "1834", museum: "大英图书馆", tier: 8, desc: "字体样本中的海洋生物装饰，符号的原始海洋。", image: "figgins_type" },
+            { week: 51, season: 'winter', title: "科德角地图", artist: "Mélanie Elizabeth Leonard", year: "1926", museum: "哈佛地图收藏", tier: 9, desc: "新英格兰海岸测绘，沉船区的地理位置。", image: "leonard_cape" },
+            
+            { week: 52, season: 'winter', title: "Giuseppe Sirtori 版画", artist: "Giuseppe Sirtori", year: "19世纪", museum: "维也纳博物馆", tier: 9, desc: "未装订的版画页，被遗忘的诗歌草稿。", image: "sirtori_print" },
+            { week: 52, season: 'winter', title: "Anatomical Engravings of the Bones", artist: "未知", year: "1834", museum: "大英图书馆", tier: 8, desc: "骨骼解剖版画，鱼怪区的身体认知。", image: "anatomy_bones" }
+        ];
+
+        // 季节信息
+        const seasonInfo = {
+            spring: { name: '春 · 表层复苏', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30', desc: '第1-3层：深压厅的晨雾，珊瑚银行的晨光，海象庭院的春潮' },
+            summer: { name: '夏 · 繁生共鸣', color: 'text-cyan-400', bg: 'bg-cyan-900/20', border: 'border-cyan-500/30', desc: '第4-5层：音乐小镇的繁茂，声波巷的喧嚣，潮汐格子间的闷热' },
+            autumn: { name: '秋 · 沉降劳作', color: 'text-orange-400', bg: 'bg-orange-900/20', border: 'border-orange-500/30', desc: '第6-7层：数据藻田的丰收，排泡通道的浑浊，苦力工的沉暮' },
+            winter: { name: '冬 · 极渊沉船', color: 'text-purple-400', bg: 'bg-purple-900/20', border: 'border-purple-500/30', desc: '第8-9层：鱼怪区的封闭，沉船区的死寂，深渊的绝对零度' }
+        };
+
+        let currentFilter = 'all';
+
+        // 生成周历内容
+        function renderCalendar() {
+            const container = document.getElementById('week-container');
+            container.innerHTML = '';
+            
+            // 按周分组
+            const weekGroups = {};
+            artworks.forEach(art => {
+                if (!weekGroups[art.week]) weekGroups[art.week] = [];
+                weekGroups[art.week].push(art);
+            });
+
+            // 获取当前周数（假设是2026年）
+            const now = new Date();
+            const currentWeek = getWeekNumber(now);
+            const is2026 = now.getFullYear() === 2026;
+
+            Object.keys(weekGroups).sort((a,b) => a-b).forEach(week => {
+                const arts = weekGroups[week];
+                const season = arts[0].season;
+                
+                if (currentFilter !== 'all' && season !== currentFilter) return;
+
+                const weekCard = document.createElement('div');
+                weekCard.className = `pressure-glass rounded-xl p-6 border border-slate-700/50 relative ${is2026 && parseInt(week) === currentWeek ? 'current-week' : ''}`;
+                
+                // 季节色条
+                const seasonBar = document.createElement('div');
+                seasonBar.className = `absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-${season === 'spring' ? 'green' : season === 'summer' ? 'cyan' : season === 'autumn' ? 'orange' : 'purple'}-500 to-transparent opacity-50`;
+                weekCard.appendChild(seasonBar);
+
+                const header = document.createElement('div');
+                header.className = 'flex justify-between items-start mb-4';
+                header.innerHTML = `
+                    <div>
+                        <div class="text-xs mono text-slate-500 mb-1">2026 WEEK ${week.toString().padStart(2, '0')}</div>
+                        <h3 class="text-lg font-bold text-cyan-100 serif">第 ${week} 周深潜</h3>
+                    </div>
+                    <div class="text-xs px-2 py-1 rounded border ${seasonInfo[season].border} ${seasonInfo[season].color} bg-opacity-10">
+                        ${season === 'spring' ? '春' : season === 'summer' ? '夏' : season === 'autumn' ? '秋' : '冬'}
+                    </div>
+                `;
+                weekCard.appendChild(header);
+
+                const artsContainer = document.createElement('div');
+                artsContainer.className = 'space-y-3';
+                
+                arts.forEach(art => {
+                    const artEl = document.createElement('div');
+                    artEl.className = `art-card p-3 rounded-lg border border-slate-700/50 bg-slate-800/30 cursor-pointer hover:border-slate-600 tier-${art.tier}`;
+                    artEl.onclick = () => openModal(art);
+                    
+                    artEl.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="text-sm font-bold text-slate-200 mb-1 line-clamp-1">${art.title}</div>
+                                <div class="text-xs text-slate-500 mono">${art.artist}</div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded border tier-${art.tier} bg-opacity-10">TIER ${art.tier}</span>
+                                    <span class="text-[10px] text-slate-600">${art.museum}</span>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 rounded bg-slate-700/50 flex items-center justify-center text-slate-500 ml-2">
+                                <i data-lucide="image" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                    `;
+                    artsContainer.appendChild(artEl);
+                });
+
+                weekCard.appendChild(artsContainer);
+                container.appendChild(weekCard);
+            });
+
+            lucide.createIcons();
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+
+        function filterSeason(season) {
+            currentFilter = season;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.season-btn').forEach(btn => {
+                if (btn.dataset.season === season) {
+                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-offset-slate-900', season === 'spring' ? 'ring-green-500' : season === 'summer' ? 'ring-cyan-500' : season === 'autumn' ? 'ring-orange-500' : 'ring-purple-500');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-slate-900', 'ring-green-500', 'ring-cyan-500', 'ring-orange-500', 'ring-purple-500');
+                }
+            });
+            
+            renderCalendar();
+            scrollToSection('calendar');
+        }
+
+        function openModal(art) {
+            const modal = document.getElementById('artwork-modal');
+            const content = document.getElementById('modal-content');
+            
+            const tierColors = {
+                1: 'cyan', 2: 'violet', 3: 'emerald', 4: 'amber', 
+                5: 'slate', 6: 'blue', 7: 'red', 8: 'gray', 9: 'zinc'
+            };
+            const tierColor = tierColors[art.tier];
+            const tierNames = {
+                1: '第一层：深压厅', 2: '第二层：珊瑚银行带', 3: '第三层：海象庭院层',
+                4: '第四层：共鸣者音乐小镇', 5: '第五层：潮汐格子间',
+                6: '第六层：数据藻田区', 7: '第七层：排泡通道带',
+                8: '第八层：封闭逻辑区', 9: '第九层：记忆遗迹带'
+            };
+
+            content.innerHTML = `
+                <div class="relative">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80 transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <div class="h-64 bg-slate-800 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90 z-10"></div>
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-600">
+                            <div class="text-center">
+                                <i data-lucide="image-off" class="w-16 h-16 mx-auto mb-2 opacity-50"></i>
+                                <span class="text-sm mono">[ ${art.image} ]</span>
+                                <div class="text-xs mt-2 opacity-50">图片来源: ${art.museum}</div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 rounded text-xs font-bold bg-${tierColor}-500/20 text-${tierColor}-400 border border-${tierColor}-500/50">
+                                    ${tierNames[art.tier]}
+                                </span>
+                                <span class="px-2 py-0.5 rounded text-xs text-slate-400 border border-slate-700">
+                                    ${art.year}
+                                </span>
+                            </div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white serif mb-1">${art.title}</h2>
+                            <p class="text-cyan-400 text-lg">${art.artist}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div class="pressure-glass p-3 rounded-lg border border-slate-700">
+                                <div class="text-slate-500 mb-1 text-xs mono">COLLECTION</div>
+                                <div class="text-slate-300">${art.museum}</div>
+                            </div>
+                            <div class="pressure-glass p-3 rounded-lg border border-slate-700">
+                                <div class="text-slate-500 mb-1 text-xs mono">EPOCH</div>
+                                <div class="text-slate-300">${art.year}</div>
+                            </div>
+                            <div class="pressure-glass p-3 rounded-lg border border-slate-700">
+                                <div class="text-slate-500 mb-1 text-xs mono">SEASON WEEK</div>
+                                <div class="text-slate-300">2026 第 ${art.week} 周</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-cyan-400 font-bold mb-2 flex items-center gap-2">
+                                <i data-lucide="anchor" class="w-4 h-4"></i>
+                                深海都市映射分析
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm md:text-base">
+                                ${art.desc}
+                            </p>
+                        </div>
+                        
+                        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                            <h4 class="text-xs font-bold text-slate-500 mono mb-3">手帐创作建议</h4>
+                            <div class="grid md:grid-cols-2 gap-3 text-sm">
+                                <div class="flex items-start gap-2">
+                                    <i data-lucide="search" class="w-4 h-4 text-cyan-400 mt-0.5"></i>
+                                    <div>
+                                        <div class="text-slate-300 font-bold">AI调研Prompt</div>
+                                        <div class="text-slate-500 text-xs mt-1">
+                                            "详细介绍 ${art.title} 的历史背景， ${art.artist} 的创作动机，以及 ${art.museum} 的收藏历史"
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <i data-lucide="pen-tool" class="w-4 h-4 text-pink-400 mt-0.5"></i>
+                                    <div>
+                                        <div class="text-slate-300 font-bold">诗歌主题</div>
+                                        <div class="text-slate-500 text-xs mt-1">
+                                            以"${tierNames[art.tier]}"为背景，写该艺术品在深海都市中的居民如何看待它
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 pt-4 border-t border-slate-800">
+                            <button onclick="closeModal()" class="flex-1 py-2 rounded border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors text-sm">
+                                关闭档案
+                            </button>
+                            <button onclick="window.print()" class="flex-1 py-2 rounded bg-cyan-600/20 border border-cyan-600/50 text-cyan-400 hover:bg-cyan-600/30 transition-colors text-sm flex items-center justify-center gap-2">
+                                <i data-lucide="printer" class="w-4 h-4"></i>
+                                打印手帐素材
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('artwork-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 显示当前日期
+        function updateDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+        }
+        updateDate();
+
+        // 初始化渲染
+        renderCalendar();
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+import React, { useState, useEffect } from ‘react’;
+import { Fish, Utensils, Droplets, Dumbbell } from ‘lucide-react’;
+
+export default function DeepSeaPet() {
+const [petState, setPetState] = useState(‘idle’);
+const [petPosition, setPetPosition] = useState({ x: 50, y: 50 });
+const [facingRight, setFacingRight] = useState(true);
+const [showMenu, setShowMenu] = useState(null);
+const [bubbles, setBubbles] = useState([]);
+const [hunger, setHunger] = useState(50);
+const [cleanliness, setCleanliness] = useState(50);
+const [energy, setEnergy] = useState(50);
+const [time, setTime] = useState(new Date());
+const [hearts, setHearts] = useState([]);
+const [emotion, setEmotion] = useState(‘normal’);
+
+// 时间更新
+useEffect(() => {
+const timer = setInterval(() => setTime(new Date()), 1000);
+return () => clearInterval(timer);
+}, []);
+
+// 判断是否是夜晚 (20:00 - 6:00)
+const isNightTime = () => {
+const hour = time.getHours();
+return hour >= 20 || hour < 6;
+};
+
+// 小鱼怪自动行为
+useEffect(() => {
+if (showMenu || petState === ‘eating’ || petState === ‘bathing’ || petState === ‘exercising’) return;
+
+```
+const behaviorInterval = setInterval(() => {
+  if (isNightTime()) {
+    setPetState('sleepy');
+    return;
+  }
+
+  const rand = Math.random();
+  if (rand < 0.3) {
+    // 移动
+    const newX = Math.random() * 70 + 15;
+    const newY = Math.random() * 50 + 25;
+    setFacingRight(newX > petPosition.x);
+    setPetPosition({ x: newX, y: newY });
+    setPetState('walking');
+    setTimeout(() => setPetState('idle'), 2000);
+  } else if (rand < 0.5) {
+    setPetState('cute');
+    setTimeout(() => setPetState('idle'), 2000);
+  }
+}, 3000);
+
+return () => clearInterval(behaviorInterval);
+```
+
+}, [petPosition, showMenu, petState, time]);
+
+// 状态衰减
+useEffect(() => {
+const decayInterval = setInterval(() => {
+setHunger(h => Math.max(0, h - 1));
+setCleanliness(c => Math.max(0, c - 0.5));
+setEnergy(e => Math.max(0, e - 0.3));
+}, 10000);
+return () => clearInterval(decayInterval);
+}, []);
+
+// 摸头
+const patHead = () => {
+if (petState === ‘eating’ || petState === ‘bathing’ || petState === ‘exercising’) return;
+
+```
+setEmotion('blushing');
+const newHearts = Array.from({ length: 5 }, (_, i) => ({
+  id: Date.now() + i,
+  x: petPosition.x + (Math.random() - 0.5) * 15,
+  y: petPosition.y - 10
+}));
+setHearts(newHearts);
+
+setTimeout(() => {
+  setHearts([]);
+  setEmotion('normal');
+}, 2000);
+```
+
+};
+
+// 拽尾巴
+const pullTail = () => {
+if (petState === ‘eating’ || petState === ‘bathing’ || petState === ‘exercising’) return;
+
+```
+setEmotion('angry');
+setPetPosition(p => ({ x: p.x - 3, y: p.y }));
+
+setTimeout(() => {
+  setEmotion('normal');
+}, 2000);
+```
+
+};
+
+// 喂食
+const feed = (foodType) => {
+setPetState(‘eating’);
+setHunger(h => Math.min(100, h + 30));
+setTimeout(() => {
+setPetState(‘idle’);
+setShowMenu(null);
+}, 2000);
+};
+
+// 洗澡
+const bathe = (shampooColor) => {
+setPetState(‘bathing’);
+const newBubbles = Array.from({ length: 8 }, (_, i) => ({
+id: Date.now() + i,
+x: petPosition.x + (Math.random() - 0.5) * 20,
+y: petPosition.y + (Math.random() - 0.5) * 20,
+color: shampooColor
+}));
+setBubbles(newBubbles);
+setCleanliness(c => Math.min(100, c + 35));
+setTimeout(() => {
+setBubbles([]);
+setPetState(‘idle’);
+setShowMenu(null);
+}, 3000);
+};
+
+// 运动
+const exercise = (exerciseType) => {
+setPetState(‘exercising’);
+setEnergy(e => Math.min(100, e + 25));
+
+```
+// 运动动画
+let count = 0;
+const startX = petPosition.x;
+const startY = petPosition.y;
+
+const exerciseAnim = setInterval(() => {
+  if (exerciseType === 'swim') {
+    // 绕圈游泳 - 圆形路径
+    const angle = (count * 0.3) % (Math.PI * 2);
+    const radius = 15;
+    const newX = startX + Math.cos(angle) * radius;
+    const newY = startY + Math.sin(angle) * radius;
+    
+    // 根据游泳方向调整朝向
+    setFacingRight(Math.cos(angle) > 0);
+    
+    setPetPosition({ 
+      x: Math.max(10, Math.min(85, newX)), 
+      y: Math.max(20, Math.min(70, newY)) 
+    });
+  } else if (exerciseType === 'jump') {
+    // 跳跃 - 上下跳动
+    setPetPosition(p => ({ 
+      x: p.x, 
+      y: Math.max(20, Math.min(70, p.y + (count % 2 === 0 ? -8 : 8))) 
+    }));
+  } else {
+    // 舞蹈 - 左右摇摆
+    const offset = Math.sin(count * 0.5) * 8;
+    setFacingRight(offset > 0);
+    setPetPosition(p => ({ 
+      x: Math.max(10, Math.min(85, startX + offset)), 
+      y: p.y 
+    }));
+  }
+  count++;
+}, 150);
+
+setTimeout(() => {
+  clearInterval(exerciseAnim);
+  setPetState('idle');
+  setShowMenu(null);
+}, 3000);
+```
+
+};
+
+// 渲染小鱼怪
+const renderPet = () => {
+const baseStyle = {
+left: `${petPosition.x}%`,
+top: `${petPosition.y}%`,
+transform: facingRight ? ‘scaleX(1)’ : ‘scaleX(-1)’
+};
+
+```
+if (petState === 'sleepy' || isNightTime()) {
+  return (
+    <div style={baseStyle} className="absolute transition-all duration-500">
+      <div className="relative">
+        <div className="w-16 h-12 bg-cyan-400 rounded-full border-4 border-cyan-600"></div>
+        <div className="absolute top-1 left-3 w-2 h-1 bg-gray-800"></div>
+        <div className="absolute top-1 right-3 w-2 h-1 bg-gray-800"></div>
+        <div className="absolute -top-2 left-2 text-xl">💤</div>
+      </div>
+    </div>
+  );
+}
+
+return (
+  <div style={baseStyle} className="absolute transition-all duration-500">
+    <div className="relative">
+      {/* 身体 */}
+      <div className={`w-16 h-12 rounded-full border-4 border-cyan-600 pixel-art ${emotion === 'blushing' ? 'bg-pink-300' : 'bg-cyan-400'}`}></div>
+      
+      {/* 眼睛 */}
+      {emotion === 'angry' ? (
+        <>
+          <div className="absolute top-2 left-4 w-3 h-1 bg-gray-800 transform rotate-12"></div>
+          <div className="absolute top-2 right-4 w-3 h-1 bg-gray-800 transform -rotate-12"></div>
+        </>
+      ) : (
+        <>
+          <div className="absolute top-2 left-4 w-3 h-3 bg-white rounded-full border-2 border-gray-800">
+            <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
+          </div>
+          <div className="absolute top-2 right-4 w-3 h-3 bg-white rounded-full border-2 border-gray-800">
+            <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
+          </div>
+        </>
+      )}
+      
+      {/* 腮红 */}
+      {emotion === 'blushing' && (
+        <>
+          <div className="absolute top-4 left-1 w-3 h-2 bg-pink-400 rounded-full opacity-70"></div>
+          <div className="absolute top-4 right-1 w-3 h-2 bg-pink-400 rounded-full opacity-70"></div>
+        </>
+      )}
+      
+      {/* 嘴巴 */}
+      {petState === 'cute' && emotion === 'normal' && (
+        <div className="absolute top-6 left-6 w-4 h-2 border-2 border-gray-800 rounded-full border-t-0"></div>
+      )}
+      
+      {emotion === 'blushing' && (
+        <div className="absolute top-6 left-6 w-4 h-2 border-2 border-pink-600 rounded-full border-t-0"></div>
+      )}
+      
+      {emotion === 'angry' && (
+        <div className="absolute top-7 left-5 w-4 h-1 bg-gray-800"></div>
+      )}
+      
+      {petState === 'eating' && (
+        <div className="absolute top-6 left-6 w-4 h-3 bg-pink-300 rounded-full"></div>
+      )}
+      
+      {/* 鱼鳍 */}
+      <div className="absolute top-3 -left-2 w-4 h-3 bg-cyan-300 rounded-l-full border-2 border-cyan-600"></div>
+      <div className="absolute top-3 -right-2 w-4 h-3 bg-cyan-300 rounded-r-full border-2 border-cyan-600"></div>
+      
+      {/* 尾巴 - 可点击 */}
+      <div 
+        onClick={pullTail}
+        className="absolute top-4 -right-6 w-6 h-4 bg-cyan-300 border-2 border-cyan-600 cursor-pointer hover:bg-cyan-400 transition-colors" 
+        style={{ clipPath: 'polygon(0 50%, 100% 0, 100% 100%)' }}
+      ></div>
+      
+      {/* 头部点击区域 */}
+      <div
+        onClick={patHead}
+        className="absolute -top-2 left-0 w-16 h-8 cursor-pointer hover:opacity-50 transition-opacity"
+        style={{ background: 'transparent' }}
+      ></div>
+    </div>
+  </div>
+);
+```
+
+};
+
+return (
+<div className="w-full h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 relative overflow-hidden">
+{/* 背景装饰 - 海底 */}
+<div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-indigo-950 to-transparent"></div>
+
+```
+  {/* 珊瑚和海草 */}
+  <div className="absolute bottom-8 left-10 w-8 h-16 bg-pink-500 rounded-t-full opacity-60"></div>
+  <div className="absolute bottom-8 right-20 w-6 h-20 bg-green-600 rounded-t-full opacity-60"></div>
+  <div className="absolute bottom-8 left-1/3 w-10 h-12 bg-purple-500 rounded-t-full opacity-60"></div>
+  
+  {/* 气泡背景 */}
+  {[...Array(6)].map((_, i) => (
+    <div
+      key={i}
+      className="absolute w-2 h-2 bg-blue-200 rounded-full opacity-40 animate-float"
+      style={{
+        left: `${Math.random() * 100}%`,
+        bottom: `${Math.random() * 50}%`,
+        animationDelay: `${Math.random() * 5}s`,
+        animationDuration: `${5 + Math.random() * 5}s`
+      }}
+    ></div>
+  ))}
+
+  {/* 游戏标题 */}
+  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center">
+    <h1 className="text-3xl font-bold text-cyan-300 pixel-text drop-shadow-lg">深海都市小鱼怪</h1>
+    <div className="text-cyan-200 text-sm mt-1">{time.toLocaleTimeString()}</div>
+  </div>
+
+  {/* 状态栏 */}
+  <div className="absolute top-20 left-4 bg-blue-900 bg-opacity-80 p-3 rounded-lg border-2 border-cyan-500">
+    <div className="text-cyan-200 text-sm mb-1">饱食度: {Math.round(hunger)}%</div>
+    <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-full bg-green-400" style={{ width: `${hunger}%` }}></div>
+    </div>
+    
+    <div className="text-cyan-200 text-sm mb-1 mt-2">清洁度: {Math.round(cleanliness)}%</div>
+    <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-full bg-blue-400" style={{ width: `${cleanliness}%` }}></div>
+    </div>
+    
+    <div className="text-cyan-200 text-sm mb-1 mt-2">活力值: {Math.round(energy)}%</div>
+    <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-full bg-yellow-400" style={{ width: `${energy}%` }}></div>
+    </div>
+  </div>
+
+  {/* 小鱼怪 */}
+  {renderPet()}
+
+  {/* 泡泡效果 */}
+  {bubbles.map(bubble => (
+    <div
+      key={bubble.id}
+      className="absolute w-8 h-8 rounded-full animate-ping"
+      style={{
+        left: `${bubble.x}%`,
+        top: `${bubble.y}%`,
+        backgroundColor: bubble.color,
+        opacity: 0.6
+      }}
+    ></div>
+  ))}
+
+  {/* 爱心效果 */}
+  {hearts.map(heart => (
+    <div
+      key={heart.id}
+      className="absolute text-2xl animate-float-up"
+      style={{
+        left: `${heart.x}%`,
+        top: `${heart.y}%`,
+      }}
+    >
+      ❤️
+    </div>
+  ))}
+
+  {/* 按钮区域 */}
+  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
+    {/* 喂食按钮 */}
+    <div className="relative">
+      <button
+        onClick={() => setShowMenu(showMenu === 'feed' ? null : 'feed')}
+        className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg border-4 border-green-800 pixel-art transition-all hover:scale-110"
+      >
+        <Utensils className="w-8 h-8" />
+      </button>
+      {showMenu === 'feed' && (
+        <div className="absolute bottom-20 left-0 bg-green-700 p-2 rounded-lg border-2 border-green-900 space-y-2">
+          <button onClick={() => feed('fish')} className="block w-full bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">🐟 小鱼</button>
+          <button onClick={() => feed('shrimp')} className="block w-full bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">🦐 虾米</button>
+          <button onClick={() => feed('seaweed')} className="block w-full bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">🌿 海藻</button>
+        </div>
+      )}
+    </div>
+
+    {/* 洗澡按钮 */}
+    <div className="relative">
+      <button
+        onClick={() => setShowMenu(showMenu === 'bathe' ? null : 'bathe')}
+        className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg border-4 border-blue-800 pixel-art transition-all hover:scale-110"
+      >
+        <Droplets className="w-8 h-8" />
+      </button>
+      {showMenu === 'bathe' && (
+        <div className="absolute bottom-20 left-0 bg-blue-700 p-2 rounded-lg border-2 border-blue-900 space-y-2">
+          <button onClick={() => bathe('rgba(255, 192, 203, 0.8)')} className="block w-full bg-pink-400 hover:bg-pink-500 px-4 py-2 rounded text-white">🌸 粉红香波</button>
+          <button onClick={() => bathe('rgba(144, 238, 144, 0.8)')} className="block w-full bg-green-400 hover:bg-green-500 px-4 py-2 rounded text-white">🍃 薄荷香波</button>
+          <button onClick={() => bathe('rgba(173, 216, 230, 0.8)')} className="block w-full bg-blue-300 hover:bg-blue-400 px-4 py-2 rounded text-white">💙 海洋香波</button>
+        </div>
+      )}
+    </div>
+
+    {/* 运动按钮 */}
+    <div className="relative">
+      <button
+        onClick={() => setShowMenu(showMenu === 'exercise' ? null : 'exercise')}
+        className="bg-yellow-600 hover:bg-yellow-700 text-white p-4 rounded-lg border-4 border-yellow-800 pixel-art transition-all hover:scale-110"
+      >
+        <Dumbbell className="w-8 h-8" />
+      </button>
+      {showMenu === 'exercise' && (
+        <div className="absolute bottom-20 left-0 bg-yellow-700 p-2 rounded-lg border-2 border-yellow-900 space-y-2">
+          <button onClick={() => exercise('swim')} className="block w-full bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded text-white">🏊 游泳</button>
+          <button onClick={() => exercise('jump')} className="block w-full bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded text-white">⬆️ 跳跃</button>
+          <button onClick={() => exercise('dance')} className="block w-full bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded text-white">💃 舞蹈</button>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <style jsx>{`
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-100vh); }
+    }
+    .animate-float {
+      animation: float linear infinite;
+    }
+    @keyframes float-up {
+      0% { 
+        transform: translateY(0px) scale(1);
+        opacity: 1;
+      }
+      100% { 
+        transform: translateY(-50px) scale(1.5);
+        opacity: 0;
+      }
+    }
+    .animate-float-up {
+      animation: float-up 2s ease-out forwards;
+    }
+    .pixel-art {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+    .pixel-text {
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    }
+  `}</style>
+</div>
+```
+
+);
+}

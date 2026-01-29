@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深海都市小鱼怪养成游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Courier New', monospace;
+        overflow: hidden;
+        user-select: none;
+    }
+
+    #game-container {
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(to bottom, #1e3a8a, #1e40af, #1e1b4b);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ocean-bottom {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 128px;
+        background: linear-gradient(to top, #312e81, transparent);
+    }
+
+    .coral {
+        position: absolute;
+        bottom: 32px;
+        border-radius: 50% 50% 0 0;
+        opacity: 0.6;
+    }
+
+    .coral-1 { left: 10%; width: 32px; height: 64px; background: #ec4899; }
+    .coral-2 { right: 20%; width: 24px; height: 80px; background: #16a34a; }
+    .coral-3 { left: 33%; width: 40px; height: 48px; background: #a855f7; }
+
+    .bubble-bg {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #bfdbfe;
+        border-radius: 50%;
+        opacity: 0.4;
+        animation: float-bubble 10s linear infinite;
+    }
+
+    @keyframes float-bubble {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-100vh); }
+    }
+
+    #title {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+
+    #title h1 {
+        font-size: 2rem;
+        color: #67e8f9;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    }
+
+    #title .time {
+        color: #a5f3fc;
+        font-size: 0.875rem;
+        margin-top: 4px;
+    }
+
+    #stats {
+        position: absolute;
+        top: 80px;
+        left: 16px;
+        background: rgba(30, 58, 138, 0.8);
+        padding: 12px;
+        border-radius: 8px;
+        border: 2px solid #06b6d4;
+        color: #a5f3fc;
+        font-size: 0.875rem;
+    }
+
+    .stat-bar {
+        width: 128px;
+        height: 8px;
+        background: #374151;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 4px;
+        margin-bottom: 8px;
+    }
+
+    .stat-fill {
+        height: 100%;
+        transition: width 0.3s;
+    }
+
+    .fill-hunger { background: #4ade80; }
+    .fill-clean { background: #60a5fa; }
+    .fill-energy { background: #facc15; }
+
+    #pet {
+        position: absolute;
+        transition: all 0.5s;
+    }
+
+    .pet-body {
+        width: 64px;
+        height: 48px;
+        background: #22d3ee;
+        border-radius: 50%;
+        border: 4px solid #0891b2;
+        position: relative;
+        image-rendering: pixelated;
+    }
+
+    .pet-body.blushing {
+        background: #fca5a5;
+    }
+
+    .pet-eye {
+        position: absolute;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-radius: 50%;
+        border: 2px solid #1f2937;
+    }
+
+    .pet-eye-left { left: 16px; }
+    .pet-eye-right { right: 16px; }
+
+    .pet-pupil {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 6px;
+        height: 6px;
+        background: #1f2937;
+        border-radius: 50%;
+    }
+
+    .pet-eye-angry {
+        position: absolute;
+        top: 8px;
+        width: 12px;
+        height: 4px;
+        background: #1f2937;
+    }
+
+    .pet-eye-angry.left { left: 16px; transform: rotate(12deg); }
+    .pet-eye-angry.right { right: 16px; transform: rotate(-12deg); }
+
+    .pet-blush {
+        position: absolute;
+        top: 16px;
+        width: 12px;
+        height: 8px;
+        background: #f472b6;
+        border-radius: 50%;
+        opacity: 0.7;
+    }
+
+    .pet-blush-left { left: 4px; }
+    .pet-blush-right { right: 4px; }
+
+    .pet-mouth {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+    }
+
+    .mouth-smile {
+        width: 16px;
+        height: 8px;
+        border: 2px solid #1f2937;
+        border-radius: 0 0 8px 8px;
+        border-top: none;
+    }
+
+    .mouth-blush {
+        width: 16px;
+        height: 8px;
+        border: 2px solid #db2777;
+        border-radius: 0 0 8px 8px;
+        border-top: none;
+    }
+
+    .mouth-angry {
+        width: 16px;
+        height: 4px;
+        background: #1f2937;
+        top: 28px;
+        left: 20px;
+    }
+
+    .mouth-eating {
+        width: 16px;
+        height: 12px;
+        background: #fca5a5;
+        border-radius: 50%;
+    }
+
+    .pet-fin {
+        position: absolute;
+        top: 12px;
+        width: 16px;
+        height: 12px;
+        background: #a5f3fc;
+        border: 2px solid #0891b2;
+    }
+
+    .pet-fin-left { left: -8px; border-radius: 8px 0 0 8px; }
+    .pet-fin-right { right: -8px; border-radius: 0 8px 8px 0; }
+
+    .pet-tail {
+        position: absolute;
+        top: 16px;
+        right: -24px;
+        width: 24px;
+        height: 16px;
+        background: #a5f3fc;
+        border: 2px solid #0891b2;
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .pet-tail:hover {
+        background: #67e8f9;
+    }
+
+    .pet-head-area {
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 64px;
+        height: 32px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .pet-head-area:hover {
+        opacity: 0.5;
+    }
+
+    .sleep-icon {
+        position: absolute;
+        top: -8px;
+        left: 8px;
+        font-size: 1.5rem;
+    }
+
+    .bubble {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes ping {
+        75%, 100% {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    .heart {
+        position: absolute;
+        font-size: 1.5rem;
+        animation: float-heart 2s ease-out forwards;
+    }
+
+    @keyframes float-heart {
+        0% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-50px) scale(1.5);
+            opacity: 0;
+        }
+    }
+
+    #controls {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 16px;
+    }
+
+    .control-wrapper {
+        position: relative;
+    }
+
+    .control-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        border: 4px solid;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        transition: transform 0.2s;
+        image-rendering: pixelated;
+    }
+
+    .control-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .btn-feed {
+        background: #16a34a;
+        border-color: #166534;
+    }
+
+    .btn-bathe {
+        background: #2563eb;
+        border-color: #1e40af;
+    }
+
+    .btn-exercise {
+        background: #ca8a04;
+        border-color: #a16207;
+    }
+
+    .menu {
+        position: absolute;
+        bottom: 80px;
+        left: 0;
+        background: rgba(22, 163, 74, 0.95);
+        padding: 8px;
+        border-radius: 8px;
+        border: 2px solid #166534;
+        display: none;
+    }
+
+    .menu.show {
+        display: block;
+    }
+
+    .menu-bathe {
+        background: rgba(37, 99, 235, 0.95);
+        border-color: #1e40af;
+    }
+
+    .menu-exercise {
+        background: rgba(202, 138, 4, 0.95);
+        border-color: #a16207;
+    }
+
+    .menu-item {
+        display: block;
+        width: 100%;
+        padding: 8px 16px;
+        margin: 4px 0;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: white;
+        transition: background 0.2s;
+        white-space: nowrap;
+    }
+
+    .menu-feed .menu-item {
+        background: #22c55e;
+    }
+
+    .menu-feed .menu-item:hover {
+        background: #16a34a;
+    }
+
+    .menu-bathe .menu-item {
+        background: #3b82f6;
+    }
+
+    .menu-bathe .menu-item:hover {
+        background: #2563eb;
+    }
+
+    .menu-exercise .menu-item {
+        background: #eab308;
+    }
+
+    .menu-exercise .menu-item:hover {
+        background: #ca8a04;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div id="game-container">
+        <div class="ocean-bottom"></div>
+        <div class="coral coral-1"></div>
+        <div class="coral coral-2"></div>
+        <div class="coral coral-3"></div>
+
+```
+    <div id="title">
+        <h1>深海都市小鱼怪</h1>
+        <div class="time" id="current-time"></div>
+    </div>
+
+    <div id="stats">
+        <div>饱食度: <span id="hunger-val">50</span>%</div>
+        <div class="stat-bar"><div class="stat-fill fill-hunger" id="hunger-bar" style="width: 50%"></div></div>
+        
+        <div>清洁度: <span id="clean-val">50</span>%</div>
+        <div class="stat-bar"><div class="stat-fill fill-clean" id="clean-bar" style="width: 50%"></div></div>
+        
+        <div>活力值: <span id="energy-val">50</span>%</div>
+        <div class="stat-bar"><div class="stat-fill fill-energy" id="energy-bar" style="width: 50%"></div></div>
+    </div>
+
+    <div id="pet" style="left: 50%; top: 50%;">
+        <div id="pet-container"></div>
+    </div>
+
+    <div id="effects"></div>
+
+    <div id="controls">
+        <div class="control-wrapper">
+            <button class="control-btn btn-feed" onclick="toggleMenu('feed')">🍴</button>
+            <div class="menu menu-feed" id="menu-feed">
+                <button class="menu-item" onclick="feed('fish')">🐟 小鱼</button>
+                <button class="menu-item" onclick="feed('shrimp')">🦐 虾米</button>
+                <button class="menu-item" onclick="feed('seaweed')">🌿 海藻</button>
+            </div>
+        </div>
+
+        <div class="control-wrapper">
+            <button class="control-btn btn-bathe" onclick="toggleMenu('bathe')">💧</button>
+            <div class="menu menu-bathe" id="menu-bathe">
+                <button class="menu-item" onclick="bathe('rgba(255, 192, 203, 0.8)')">🌸 粉红香波</button>
+                <button class="menu-item" onclick="bathe('rgba(144, 238, 144, 0.8)')">🍃 薄荷香波</button>
+                <button class="menu-item" onclick="bathe('rgba(173, 216, 230, 0.8)')">💙 海洋香波</button>
+            </div>
+        </div>
+
+        <div class="control-wrapper">
+            <button class="control-btn btn-exercise" onclick="toggleMenu('exercise')">🏋️</button>
+            <div class="menu menu-exercise" id="menu-exercise">
+                <button class="menu-item" onclick="exercise('swim')">🏊 游泳</button>
+                <button class="menu-item" onclick="exercise('jump')">⬆️ 跳跃</button>
+                <button class="menu-item" onclick="exercise('dance')">💃 舞蹈</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 游戏状态
+    let petState = 'idle';
+    let petPosition = { x: 50, y: 50 };
+    let facingRight = true;
+    let showMenuType = null;
+    let hunger = 50;
+    let cleanliness = 50;
+    let energy = 50;
+    let emotion = 'normal';
+
+    // 生成背景气泡
+    function createBackgroundBubbles() {
+        const container = document.getElementById('game-container');
+        for (let i = 0; i < 6; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble-bg';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.bottom = Math.random() * 50 + '%';
+            bubble.style.animationDelay = Math.random() * 5 + 's';
+            bubble.style.animationDuration = (5 + Math.random() * 5) + 's';
+            container.appendChild(bubble);
+        }
+    }
+
+    // 更新时间
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('current-time').textContent = now.toLocaleTimeString();
+    }
+
+    // 判断是否夜晚
+    function isNightTime() {
+        const hour = new Date().getHours();
+        return hour >= 20 || hour < 6;
+    }
+
+    // 渲染小鱼怪
+    function renderPet() {
+        const container = document.getElementById('pet-container');
+        const isSleepy = petState === 'sleepy' || isNightTime();
+        
+        let html = '<div class="pet-body' + (emotion === 'blushing' ? ' blushing' : '') + '">';
+        
+        // 眼睛
+        if (isSleepy) {
+            html += '<div class="pet-eye pet-eye-left" style="width: 8px; height: 4px; background: #1f2937; border-radius: 0;"></div>';
+            html += '<div class="pet-eye pet-eye-right" style="width: 8px; height: 4px; background: #1f2937; border-radius: 0;"></div>';
+            html += '<div class="sleep-icon">💤</div>';
+        } else if (emotion === 'angry') {
+            html += '<div class="pet-eye-angry left"></div>';
+            html += '<div class="pet-eye-angry right"></div>';
+        } else {
+            html += '<div class="pet-eye pet-eye-left"><div class="pet-pupil"></div></div>';
+            html += '<div class="pet-eye pet-eye-right"><div class="pet-pupil"></div></div>';
+        }
+        
+        // 腮红
+        if (emotion === 'blushing') {
+            html += '<div class="pet-blush pet-blush-left"></div>';
+            html += '<div class="pet-blush pet-blush-right"></div>';
+        }
+        
+        // 嘴巴
+        if (!isSleepy) {
+            if (petState === 'cute' && emotion === 'normal') {
+                html += '<div class="pet-mouth mouth-smile"></div>';
+            } else if (emotion === 'blushing') {
+                html += '<div class="pet-mouth mouth-blush"></div>';
+            } else if (emotion === 'angry') {
+                html += '<div class="pet-mouth mouth-angry"></div>';
+            } else if (petState === 'eating') {
+                html += '<div class="pet-mouth mouth-eating"></div>';
+            }
+        }
+        
+        // 鱼鳍
+        html += '<div class="pet-fin pet-fin-left"></div>';
+        html += '<div class="pet-fin pet-fin-right"></div>';
+        
+        // 尾巴
+        html += '<div class="pet-tail" onclick="pullTail()"></div>';
+        
+        // 头部点击区域
+        html += '<div class="pet-head-area" onclick="patHead()"></div>';
+        
+        html += '</div>';
+        
+        container.innerHTML = html;
+        
+        // 更新位置和朝向
+        const pet = document.getElementById('pet');
+        pet.style.left = petPosition.x + '%';
+        pet.style.top = petPosition.y + '%';
+        container.style.transform = facingRight ? 'scaleX(1)' : 'scaleX(-1)';
+    }
+
+    // 自动行为
+    function autoBehavior() {
+        if (showMenuType || petState === 'eating' || petState === 'bathing' || petState === 'exercising') return;
+        
+        if (isNightTime()) {
+            petState = 'sleepy';
+            renderPet();
+            return;
+        }
+        
+        const rand = Math.random();
+        if (rand < 0.3) {
+            const newX = Math.random() * 70 + 15;
+            const newY = Math.random() * 50 + 25;
+            facingRight = newX > petPosition.x;
+            petPosition = { x: newX, y: newY };
+            petState = 'walking';
+            renderPet();
+            setTimeout(() => {
+                petState = 'idle';
+                renderPet();
+            }, 2000);
+        } else if (rand < 0.5) {
+            petState = 'cute';
+            renderPet();
+            setTimeout(() => {
+                petState = 'idle';
+                renderPet();
+            }, 2000);
+        }
+    }
+
+    // 状态衰减
+    function decayStats() {
+        hunger = Math.max(0, hunger - 1);
+        cleanliness = Math.max(0, cleanliness - 0.5);
+        energy = Math.max(0, energy - 0.3);
+        updateStats();
+    }
+
+    // 更新状态显示
+    function updateStats() {
+        document.getElementById('hunger-val').textContent = Math.round(hunger);
+        document.getElementById('hunger-bar').style.width = hunger + '%';
+        document.getElementById('clean-val').textContent = Math.round(cleanliness);
+        document.getElementById('clean-bar').style.width = cleanliness + '%';
+        document.getElementById('energy-val').textContent = Math.round(energy);
+        document.getElementById('energy-bar').style.width = energy + '%';
+    }
+
+    // 切换菜单
+    function toggleMenu(type) {
+        const menus = ['feed', 'bathe', 'exercise'];
+        menus.forEach(m => {
+            const menu = document.getElementById('menu-' + m);
+            if (m === type) {
+                menu.classList.toggle('show');
+                showMenuType = menu.classList.contains('show') ? type : null;
+            } else {
+                menu.classList.remove('show');
+            }
+        });
+    }
+
+    // 喂食
+    function feed(foodType) {
+        petState = 'eating';
+        hunger = Math.min(100, hunger + 30);
+        updateStats();
+        renderPet();
+        setTimeout(() => {
+            petState = 'idle';
+            renderPet();
+            toggleMenu('feed');
+        }, 2000);
+    }
+
+    // 洗澡
+    function bathe(color) {
+        petState = 'bathing';
+        cleanliness = Math.min(100, cleanliness + 35);
+        updateStats();
+        renderPet();
+        
+        const effects = document.getElementById('effects');
+        for (let i = 0; i < 8; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.left = (petPosition.x + (Math.random() - 0.5) * 20) + '%';
+            bubble.style.top = (petPosition.y + (Math.random() - 0.5) * 20) + '%';
+            bubble.style.backgroundColor = color;
+            effects.appendChild(bubble);
+            
+            setTimeout(() => bubble.remove(), 3000);
+        }
+        
+        setTimeout(() => {
+            petState = 'idle';
+            renderPet();
+            toggleMenu('bathe');
+        }, 3000);
+    }
+
+    // 运动
+    function exercise(type) {
+        petState = 'exercising';
+        energy = Math.min(100, energy + 25);
+        updateStats();
+        renderPet();
+        
+        const startX = petPosition.x;
+        const startY = petPosition.y;
+        let count = 0;
+        
+        const interval = setInterval(() => {
+            if (type === 'swim') {
+                const angle = (count * 0.3) % (Math.PI * 2);
+                const radius = 15;
+                const newX = startX + Math.cos(angle) * radius;
+                const newY = startY + Math.sin(angle) * radius;
+                facingRight = Math.cos(angle) > 0;
+                petPosition = {
+                    x: Math.max(10, Math.min(85, newX)),
+                    y: Math.max(20, Math.min(70, newY))
+                };
+            } else if (type === 'jump') {
+                petPosition.y = Math.max(20, Math.min(70, petPosition.y + (count % 2 === 0 ? -8 : 8)));
+            } else {
+                const offset = Math.sin(count * 0.5) * 8;
+                facingRight = offset > 0;
+                petPosition.x = Math.max(10, Math.min(85, startX + offset));
+            }
+            renderPet();
+            count++;
+        }, 150);
+        
+        setTimeout(() => {
+            clearInterval(interval);
+            petState = 'idle';
+            renderPet();
+            toggleMenu('exercise');
+        }, 3000);
+    }
+
+    // 摸头
+    function patHead() {
+        if (petState === 'eating' || petState === 'bathing' || petState === 'exercising') return;
+        
+        emotion = 'blushing';
+        renderPet();
+        
+        const effects = document.getElementById('effects');
+        for (let i = 0; i < 5; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '❤️';
+            heart.style.left = (petPosition.x + (Math.random() - 0.5) * 15) + '%';
+            heart.style.top = (petPosition.y - 10) + '%';
+            effects.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 2000);
+        }
+        
+        setTimeout(() => {
+            emotion = 'normal';
+            renderPet();
+        }, 2000);
+    }
+
+    // 拽尾巴
+    function pullTail() {
+        if (petState === 'eating' || petState === 'bathing' || petState === 'exercising') return;
+        
+        emotion = 'angry';
+        petPosition.x -= 3;
+        renderPet();
+        
+        setTimeout(() => {
+            emotion = 'normal';
+            renderPet();
+        }, 2000);
+    }
+
+    // 初始化
+    createBackgroundBubbles();
+    renderPet();
+    updateTime();
+    setInterval(updateTime, 1000);
+    setInterval(autoBehavior, 3000);
+    setInterval(decayStats, 10000);
+</script>
+```
+
+</body>
+</html>

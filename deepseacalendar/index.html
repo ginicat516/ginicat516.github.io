@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深海都市奇幻鱼日历 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&family=ZCOOL+XiaoWei&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(180deg, #000814 0%, #001d3d 50%, #003566 100%);
+            min-height: 100vh;
+            font-family: 'Noto Serif SC', serif;
+            color: #caf0f8;
+            overflow-x: hidden;
+        }
+
+        .ocean-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0,100,200,0.1) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, rgba(202,240,248,0.3), transparent);
+            border-radius: 50%;
+            border: 1px solid rgba(202,240,248,0.2);
+            animation: rise 10s infinite ease-in;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #90e0ef, #00b4d8, #caf0f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: 5px;
+        }
+
+        .calendar-box {
+            background: rgba(0, 20, 40, 0.7);
+            border: 2px solid rgba(144, 224, 239, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 180, 216, 0.2);
+        }
+
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 2px solid rgba(144, 224, 239, 0.5);
+            color: #90e0ef;
+            width: 40px; 
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: rgba(144, 224, 239, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(144, 224, 239, 0.4);
+        }
+
+        .month-title {
+            font-size: 1.5rem;
+            color: #caf0f8;
+            font-family: 'ZCOOL XiaoWei', serif;
+            letter-spacing: 3px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #48cae4;
+            font-size: 0.9rem;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .day-cell {
+            background: rgba(0, 30, 60, 0.5);
+            border: 1px solid rgba(144, 224, 239, 0.15);
+            border-radius: 10px;
+            aspect-ratio: 1 / 1.15; /* 调整宽高比，给内容足够空间 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 改为居中 */
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px;
+            overflow: hidden; /* 防止内容溢出 */
+            min-height: 80px; /* 确保最小高度 */
+        }
+
+        .day-cell:hover {
+            transform: translateY(-2px);
+            background: rgba(0, 80, 120, 0.4);
+            border-color: rgba(144, 224, 239, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+        }
+
+        .day-cell.other-month {
+            opacity: 0.3;
+        }
+
+        .day-cell.today {
+            border: 2px solid #00b4d8;
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+            background: rgba(0, 180, 216, 0.2);
+        }
+
+        .day-number {
+            font-size: 1rem; /* 稍微减小字号 */
+            font-weight: bold;
+            color: #caf0f8;
+            margin-bottom: 4px; /* 调整间距 */
+            line-height: 1;
+            z-index: 2;
+        }
+
+        .fish-icon {
+            font-size: 1.6rem; /* 调整鱼图标大小 */
+            line-height: 1;
+            filter: drop-shadow(0 0 3px rgba(255,255,255,0.3));
+            z-index: 1;
+            margin-top: 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .fish-card {
+            background: linear-gradient(135deg, rgba(0,40,80,0.95), rgba(0,60,90,0.95));
+            border: 2px solid rgba(144,224,239,0.5);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(0,180,216,0.4);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px; 
+            right: 15px;
+            font-size: 2rem;
+            color: #90e0ef;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover { opacity: 1; }
+
+        .fish-display {
+            font-size: 4rem;
+            margin: 15px 0;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
+            animation: swim 2s ease-in-out infinite;
+            line-height: 1;
+        }
+
+        @keyframes swim {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .fish-name {
+            font-size: 1.8rem;
+            color: #caf0f8;
+            margin-bottom: 8px;
+            font-family: 'ZCOOL XiaoWei', serif;
+            letter-spacing: 2px;
+        }
+
+        .fish-date {
+            color: #48cae4;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .fish-poem {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #00b4d8;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .fish-poem p {
+            color: #e0f7fa;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 4px 0;
+            font-style: italic;
+        }
+
+        .fish-desc {
+            color: #90e0ef;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .title { font-size: 1.8rem; letter-spacing: 3px; }
+            .calendar-box { padding: 15px; }
+            .days-grid { gap: 4px; }
+            .day-cell { 
+                aspect-ratio: 1 / 1.1; 
+                min-height: 60px;
+                padding: 3px;
+            }
+            .day-number { font-size: 0.9rem; }
+            .fish-icon { font-size: 1.3rem; }
+            .weekdays { font-size: 0.8rem; gap: 4px; }
+            .fish-display { font-size: 3rem; }
+            .fish-name { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .day-cell { min-height: 50px; }
+            .day-number { font-size: 0.8rem; }
+            .fish-icon { font-size: 1.1rem; }
+            .title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ocean-bg" id="oceanBg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">深海都市奇幻鱼日历</h1>
+            <p style="color: #48cae4; opacity: 0.8; font-size: 0.9rem;">365日 · 365种游弋的幻想 · 2026</p>
+        </div>
+
+        <div class="calendar-box">
+            <div class="month-nav">
+                <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+                <div class="month-title" id="monthTitle">2026年 1月</div>
+                <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+            </div>
+            
+            <div class="weekdays">
+                <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+            </div>
+            
+            <div class="days-grid" id="daysGrid"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal" onclick="closeModal(event)">
+        <div class="fish-card" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="fish-display" id="fishEmoji">🐟</div>
+            <h2 class="fish-name" id="fishName">鱼名</h2>
+            <div class="fish-date" id="fishDate">日期</div>
+            <div class="fish-poem" id="fishPoem"></div>
+            <div class="fish-desc" id="fishDesc">描述</div>
+        </div>
+    </div>
+
+    <script>
+        // 365天完整数据库 - 完全保持不变
+        const fishDatabase = {
+            // 一月（冬季，新年，小寒，大寒）
+            "1-1": { name: "鞭炮鱼", emoji: "🧨", poem: ["红鳞炸响第一声","碎金沉向海底深","新年的巡游开始"], desc: "在午夜钟声里炸裂成红色的浪，用声响唤醒沉睡的深海" },
+            "1-2": { name: "灯笼鱼", emoji: "🏮", poem: ["腹中提着一团火","照亮归途的波折","温暖在冷水里闪烁"], desc: "红色的光在黑暗中摇曳，为迷路的鱼群指引归家方向" },
+            "1-3": { name: "饺子鱼", emoji: "🥟", poem: ["白白胖胖沉水中","肚里包着元宝梦","一口咬破春心动"], desc: "褶皱的表皮像元宝，内馅是深海的秘密配方" },
+            "1-4": { name: "冰晶鱼", emoji: "❄️", poem: ["六边形的寒冷","在温水中慢慢融化","透明骨骼显形"], desc: "身体由冰晶构成，游过之处留下细小的冰晶轨迹" },
+            "1-5": { name: "小寒鱼", emoji: "🧊", poem: ["小寒的水域更沉","吐出的泡泡结冰","是冬天的刻度"], desc: "标志着深海的寒冷加剧，鳞片上凝结着薄霜" },
+            "1-6": { name: "围巾鱼", emoji: "🧣", poem: ["红色的绒毛绕颈","在洋流中飘动","温暖是奢侈品"], desc: "天生的红色环纹像围巾，为深海增添一抹暖色" },
+            "1-7": { name: "雪花鱼", emoji: "🌨️", poem: ["六角形的鳞片","从水面沉下来","每片都是冬天的信"], desc: "鳞片呈雪花状，游动时如同水中飘雪" },
+            "1-8": { name: "暖炉鱼", emoji: "🔥", poem: ["在肚子里生一团火","烤热周围三米的水","孤独地供暖"], desc: "腹部能发出热量，是深海中的移动暖源" },
+            "1-9": { name: "茶缸鱼", emoji: "🍵", poem: ["瓷白的身体盛着","碧绿的茶水","沉淀着早春的香"], desc: "形似古老的茶缸，体内循环着温暖的茶色液体" },
+            "1-10": { name: "窗花鱼", emoji: "🪟", poem: ["冰刻在鳍上","剪出喜鹊登梅","是冬天的刺绣"], desc: "鳍上的花纹如同剪纸窗花，精致而脆弱" },
+            "1-11": { name: "糖瓜鱼", emoji: "🍬", poem: ["粘牙的甜","黏住了时间的嘴","让年过得慢些"], desc: "身体粘稠甜美，是深海小年祭灶的供品" },
+            "1-12": { name: "扫尘鱼", emoji: "🧹", poem: ["尾巴是扫帚","扫过珊瑚的缝隙","扫去一年的灰"], desc: "尾鳍如扫帚，游动时清理海底的尘埃" },
+            "1-13": { name: "日历鱼", emoji: "📅", poem: ["身上印着数字","每过一天撕一页","在海底记录时间"], desc: "鳞片上显示日期，是深海里的活日历" },
+            "1-14": { name: "方块鱼", emoji: "⬜", poem: ["棱角分明地游","在圆润的世界里","坚持方的立场"], desc: "身体呈完美的立方体，是几何学的奇迹" },
+            "1-15": { name: "圆月鱼", emoji: "🌕", poem: ["十五的圆满","银盘沉在水中","照着相思"], desc: "身体浑圆如满月，在黑暗中发出银辉" },
+            "1-16": { name: "腊肉鱼", emoji: "🥓", poem: ["烟熏的纹理","是时间的年轮","咸香在海水里扩散"], desc: "表皮有烟熏的纹理，散发着腌制食品的香气" },
+            "1-17": { name: "福字鱼", emoji: "🧧", poem: ["倒着游过来","福到了","红色的祝福"], desc: "身上天然生成福字纹样，倒游时寓意福到" },
+            "1-18": { name: "腊八鱼", emoji: "🥣", poem: ["八种谷物熬成","浓稠的粥","在肚子里翻滚"], desc: "体内有八种颜色的纹理，如同腊八粥" },
+            "1-19": { name: "大寒鱼", emoji: "🌡️", poem: ["最冷的水域","血液几乎凝固","等待春的裂缝"], desc: "生活在最寒冷的水层，标志着冬季的顶点" },
+            "1-20": { name: "冬眠鱼", emoji: "💤", poem: ["睡在珊瑚洞里","呼吸变得缓慢","梦里是春天"], desc: "冬季进入休眠状态，身体半透明如冰雕" },
+            "1-21": { name: "剪刀鱼", emoji: "✂️", poem: ["尾鳍是剪刀","裁开冬天的尾巴","迎接新春"], desc: "尾鳍锋利如剪刀，能剪断水流的寒意" },
+            "1-22": { name: "春联鱼", emoji: "📜", poem: ["身上写满对仗","黑色的字红色的底","是对联在游"], desc: "身体两侧有对联般的纹理，寓意吉祥" },
+            "1-23": { name: "芝麻糖鱼", emoji: "🍯", poem: ["粘满芝麻的甜","咬下去咔嚓响","是儿时的味"], desc: "体表覆盖芝麻状斑点，甜蜜酥脆" },
+            "1-24": { name: "扫房鱼", emoji: "🧽", poem: ["擦净每一片鳞","迎接新年的到来","旧尘随水流"], desc: "勤快地清理周围环境，象征着除旧迎新" },
+            "1-25": { name: "炸货鱼", emoji: "🍤", poem: ["金黄酥脆的外皮","是油锅的记忆","在深海里飘香"], desc: "体表金黄如炸物，散发着诱人的香气" },
+            "1-26": { name: "花馍鱼", emoji: "🥯", poem: ["面捏的莲花","在蒸笼里开花","沉到海底"], desc: "身体如花馍般精致，有面食的柔软质感" },
+            "1-27": { name: "守岁鱼", emoji: "🕯️", poem: ["一夜不闭眼","守着旧年的尾巴","等第一缕光"], desc: "眼睛永不闭合，象征着守岁的坚持" },
+            "1-28": { name: "春晚鱼", emoji: "📺", poem: ["屏幕上闪烁","歌舞升平的画面","是年的背景音"], desc: "身体能投射光影，如同水下的电视屏幕" },
+            "1-29": { name: "烟花鱼", emoji: "🎆", poem: ["瞬间的绚烂","在黑暗中炸开","然后归于沉寂"], desc: "能发出绚丽的光，如同水下的烟花" },
+            "1-30": { name: "守夜鱼", emoji: "🌃", poem: ["在午夜游弋","收集散落的星","等待黎明"], desc: "夜间活动，守护着深海的宁静" },
+            "1-31": { name: "除夕鱼", emoji: "🎊", poem: ["最后的夜晚","旧岁在此刻沉没","新春浮上来"], desc: "标志着一年的结束，身体散发着辞旧迎新的光芒" },
+
+            // 二月（春节，立春，元宵，情人节）
+            "2-1": { name: "春节鱼", emoji: "🎋", poem: ["爆竹声中一岁除","春风送暖入屠苏","新桃换旧符"], desc: "最隆重的节日之鱼，全身散发着喜庆的红色" },
+            "2-2": { name: "龙抬头鱼", emoji: "🐲", poem: ["二月二日龙抬头","抬起深海的脊梁","春雷在头顶"], desc: "头部有龙角状突起，标志着春耕开始" },
+            "2-3": { name: "立春鱼", emoji: "🌱", poem: ["东风解冻","蛰虫始振","鱼上负冰"], desc: "带来春天的消息，身体开始泛绿" },
+            "2-4": { name: "燕子鱼", emoji: "🐦", poem: ["剪刀尾裁开春风","衔泥筑巢在珊瑚","归来是旧识"], desc: "尾鳍如燕尾，每年此时归来" },
+            "2-5": { name: "汤圆鱼", emoji: "⚪", poem: ["白白胖胖浮水中","芝麻馅里藏春风","一口咬破月朦胧"], desc: "圆润如汤圆，象征团团圆圆" },
+            "2-6": { name: "红包鱼", emoji: "🧧", poem: ["肚子里装满压岁钱","红色的纸包着好运","分发给每一滴水"], desc: "体内仿佛装着红包，带来财运" },
+            "2-7": { name: "春卷鱼", emoji: "🌯", poem: ["薄薄的皮裹着","春天的第一抹绿","炸得金黄"], desc: "身体卷曲如春卷，内藏春意" },
+            "2-8": { name: "年画鱼", emoji: "🖼️", poem: ["胖娃娃抱着","鲜艳的色彩不褪","是年的记忆"], desc: "体表如年画般色彩鲜艳，寓意吉祥" },
+            "2-9": { name: "门神鱼", emoji: "🛡️", poem: ["左右各一尾","守护着深海的门","邪祟不敢入"], desc: "成对出现，如门神般威严" },
+            "2-10": { name: "剪纸鱼", emoji: "✂️", poem: ["红色的纸镂空","剪出年年有余","贴在珊瑚上"], desc: "身体如剪纸般镂空，红色透明" },
+            "2-11": { name: "灯谜鱼", emoji: "🏮", poem: ["肚子里藏着谜语","猜中了才能过","是元宵的游戏"], desc: "体内有谜题，等待智者解答" },
+            "2-12": { name: "舞狮鱼", emoji: "🦁", poem: ["披着狮子的皮","踩着鼓点游动","是节日的狂欢"], desc: "头部如狮，能表演舞狮动作" },
+            "2-13": { name: "巧克力鱼", emoji: "🍫", poem: ["甜蜜的苦涩","在舌尖融化","是爱情的味"], desc: "情人节前夜，身体如巧克力般丝滑" },
+            "2-14": { name: "玫瑰鱼", emoji: "🌹", poem: ["用刺守护柔软","红色的花瓣是鳍","为爱绽放"], desc: "背鳍如玫瑰花瓣，象征爱情" },
+            "2-15": { name: "元宵鱼", emoji: "🏮", poem: ["正月十五闹元宵","灯火通明照海底","月圆人团圆"], desc: "元宵节专属，身体如灯笼般发光" },
+            "2-16": { name: "月老鱼", emoji: "💑", poem: ["红线系在鳍上","牵着有缘的尾","姻缘天注定"], desc: "鳍上有红线，专门撮合水中姻缘" },
+            "2-17": { name: "情书鱼", emoji: "💌", poem: ["肚子里藏着字","墨香混着海水","寄给远方"], desc: "体内仿佛有信件，传递深情" },
+            "2-18": { name: "雨水鱼", emoji: "🌧️", poem: ["好雨知时节","当春乃发生","润物细无声"], desc: "标志着雨水节气，带来丰沛的水汽" },
+            "2-19": { name: "蘑菇鱼", emoji: "🍄", poem: ["伞盖撑开","在海底的森林","是春天的信使"], desc: "头部如蘑菇，在春季迅速生长" },
+            "2-20": { name: "嫩芽鱼", emoji: "🌿", poem: ["破土而出的绿","在寒冷中倔强","生命初醒"], desc: "身体嫩绿如初芽，象征生命力" },
+            "2-21": { name: "风筝鱼", emoji: "🪁", poem: ["线轴在云端","尾巴在海里","春风牵线"], desc: "能乘风而起，如风筝般翱翔" },
+            "2-22": { name: "猫鱼", emoji: "🐱", poem: ["九条命的灵巧","在珊瑚间跳跃","是鱼的猫"], desc: "动作敏捷如猫，可爱灵动" },
+            "2-23": { name: "围棋鱼", emoji: "⚫", poem: ["黑白分明","在十九路海里","落子无悔"], desc: "身体黑白分明，如围棋棋子" },
+            "2-24": { name: "茶壶鱼", emoji: "🫖", poem: ["肚里装着茶水","壶嘴吐出泡泡","是午后的闲"], desc: "形似茶壶，能喷出茶香气泡" },
+            "2-25": { name: "镜子鱼", emoji: "🪞", poem: ["映出你的模样","水面的倒影","真实与虚幻"], desc: "体表如镜，能清晰映照周围" },
+            "2-26": { name: "梳子鱼", emoji: "🪮", poem: ["齿间梳理水流","理顺打结的浪","是海的理发师"], desc: "背鳍如梳子，能梳理水流" },
+            "2-27": { name: "铃铛鱼", emoji: "🔔", poem: ["摇一摇就响","清脆的声音","是深海的钟"], desc: "游动时发出铃铛般的声响" },
+            "2-28": { name: "螺旋鱼", emoji: "🌀", poem: ["旋转着下沉","在漩涡中心","是力的形状"], desc: "身体呈螺旋状，能制造小漩涡" },
+
+            // 三月（惊蛰，春分，妇女节，植树节）
+            "3-1": { name: "迎春鱼", emoji: "🌼", poem: ["黄色的花先开","在春天门口","迎接百花"], desc: "体表黄色如迎春花，最早感知春意" },
+            "3-2": { name: "雷鱼", emoji: "⚡", poem: ["惊蛰一声雷","惊醒沉睡的虫","万物始动"], desc: "能发出雷鸣般的声响，惊醒海底生物" },
+            "3-3": { name: "耳朵鱼", emoji: "👂", poem: ["倾听春天的脚步","捕捉细微的震动","是深海的耳"], desc: "听觉极其灵敏，能听见春天的声音" },
+            "3-4": { name: "燕子鱼", emoji: "🐦", poem: ["归来寻旧垒","剪尾点破春水","衔泥忙筑巢"], desc: "春分前归来，忙于筑巢" },
+            "3-5": { name: "雷锋鱼", emoji: "🎖️", poem: ["做好事不留名","在深海里助人","精神永流传"], desc: "乐于助人，做好事从不张扬" },
+            "3-6": { name: "昆虫鱼", emoji: "🐛", poem: ["惊蛰虫始振","从土里钻出来","是春的胎动"], desc: "形似昆虫，惊蛰后开始活跃" },
+            "3-7": { name: "女生鱼", emoji: "👧", poem: ["明日是女王","今日先绽放","温柔的力"], desc: "女生节专属，柔美而充满力量" },
+            "3-8": { name: "康乃馨鱼", emoji: "🌸", poem: ["粉色的温柔","是母亲的颜色","感恩的花"], desc: "妇女节象征，如康乃馨般温馨" },
+            "3-9": { name: "风筝鱼", emoji: "🪁", poem: ["趁着东风起","飞上青云去","线在手里"], desc: "春分前后乘风而起" },
+            "3-10": { name: "蜗牛鱼", emoji: "🐌", poem: ["背着房子走","缓慢而坚定","留下银痕迹"], desc: "背着壳缓慢游动，留下银色轨迹" },
+            "3-11": { name: "铲子鱼", emoji: "⛏️", poem: ["挖开海底的土","种下绿色的梦","是植树的手"], desc: "头部如铲，擅长挖掘种植" },
+            "3-12": { name: "树苗鱼", emoji: "🌱", poem: ["今日种下的绿","明日成林的荫","是未来的根"], desc: "植树节象征，身体如小树苗" },
+            "3-13": { name: "水滴鱼", emoji: "💧", poem: ["圆润的透明","折射出七彩","是水的魂"], desc: "身体如水滴，晶莹剔透" },
+            "3-14": { name: "圆周率鱼", emoji: "π", poem: ["3.14159","无限不循环","是宇宙的密"], desc: "身体有π符号，象征数学之美" },
+            "3-15": { name: "消费者鱼", emoji: "🛡️", poem: ["权益需保护","在深海里也要","明明白白的"], desc: "消费者权益日，维护正义" },
+            "3-16": { name: "燕子鱼", emoji: "🐦", poem: ["春分燕归来","剪水穿柳过","衔来满树春"], desc: "春分前后大量出现" },
+            "3-17": { name: "圣派翠克鱼", emoji: "☘️", poem: ["绿色的三叶草","幸运在鳍上","爱尔兰的风"], desc: "圣帕特里克节，带来幸运" },
+            "3-18": { name: "水波鱼", emoji: "〰️", poem: ["荡漾的波纹","一圈圈扩散","是风的脚印"], desc: "身体如波纹，游动时产生涟漪" },
+            "3-19": { name: "樱花鱼", emoji: "🌸", poem: ["粉色的云落下","在春风里飘","短暂而绚烂"], desc: "体表粉红如樱花，花期短暂" },
+            "3-20": { name: "春分鱼", emoji: "⚖️", poem: ["昼夜平分","阴阳相半","春色正中"], desc: "春分日专属，象征平衡" },
+            "3-21": { name: "燕子鱼", emoji: "🐦", poem: ["春分而登天","秋分而入渊","是时的候鸟"], desc: "春分时节飞向天空" },
+            "3-22": { name: "水世界鱼", emoji: "🌍", poem: ["珍惜每一滴","水是生命源","世界水日"], desc: "世界水日提醒珍惜水资源" },
+            "3-23": { name: "气象鱼", emoji: "🌤️", poem: ["观云识天气","预报风雨来","是海的先知"], desc: "能预测天气变化" },
+            "3-24": { name: "结核病鱼", emoji: "🫁", poem: ["关注肺健康","在深海也要","自由呼吸"], desc: "世界结核病日，关注健康" },
+            "3-25": { name: "地球鱼", emoji: "🌏", poem: ["蓝色的星球","在宇宙中游","是家的形状"], desc: "身体如地球，蓝色美丽" },
+            "3-26": { name: "彩虹鱼", emoji: "🌈", poem: ["雨后的七彩","架在天空的桥","连接两岸"], desc: "身体七彩，如彩虹般绚烂" },
+            "3-27": { name: "戏剧鱼", emoji: "🎭", poem: ["生旦净末丑","在海底唱戏","是世界的舞台"], desc: "世界戏剧日，能表演各种角色" },
+            "3-28": { name: "鲸鱼鱼", emoji: "🐋", poem: ["巨大的温柔","在深海歌唱","是孤独的王"], desc: "体型巨大，歌声悠扬" },
+            "3-29": { name: "波浪鱼", emoji: "🌊", poem: ["起伏的律动","拍打着海岸","是海的呼吸"], desc: "身体如波浪，起伏不定" },
+            "3-30": { name: "医生鱼", emoji: "👨‍⚕️", poem: ["救死扶伤","在深海行医","是生命的守护"], desc: "能治愈其他鱼类的疾病" },
+            "3-31": { name: "小丑鱼", emoji: "🤡", poem: ["橙白相间的笑","在海葵里安家","是尼莫的表亲"], desc: "色彩鲜艳，活泼可爱" },
+
+            // 四月（清明，谷雨，春天）
+            "4-1": { name: "愚人节鱼", emoji: "🃏", poem: ["骗你是四月一","真话藏在玩笑里","别生气"], desc: "喜欢恶作剧，但无恶意" },
+            "4-2": { name: "枕头鱼", emoji: "🛏️", poem: ["柔软的梦","在海底沉睡","是夜的港湾"], desc: "身体柔软如枕，适合休息" },
+            "4-3": { name: "电话鱼", emoji: "📞", poem: ["铃声响在深海","喂喂喂听得见","是远的问候"], desc: "能远距离通讯，传递信息" },
+            "4-4": { name: "青团鱼", emoji: "🟢", poem: ["艾草染的绿","裹着豆沙的甜","是清明的味"], desc: "清明节专属，碧绿如青团" },
+            "4-5": { name: "清明鱼", emoji: "🌧️", poem: ["清明时节雨纷纷","路上行人欲断魂","借问酒家何处"], desc: "清明日，带着淡淡的哀愁" },
+            "4-6": { name: "柳条鱼", emoji: "🌿", poem: ["万条垂下绿丝绦","拂水飘绵送行色","是离的愁"], desc: "身体如柳条，柔软下垂" },
+            "4-7": { name: "卫生鱼", emoji: "🧼", poem: ["世界卫生日","洁净是美德","洗洗手"], desc: "注重卫生，清洁周围环境" },
+            "4-8": { name: "燕子鱼", emoji: "🐦", poem: ["归来寻旧垒","画栋雕梁","是家的方向"], desc: "继续回归，寻找旧巢" },
+            "4-9": { name: "书签鱼", emoji: "🔖", poem: ["夹在书页间","标记读到哪","是知识的锚"], desc: "能标记位置，方便寻找" },
+            "4-10": { name: "鸽子鱼", emoji: "🕊️", poem: ["衔着橄榄枝","带来和平的消息","是白的信使"], desc: "象征和平，羽毛洁白" },
+            "4-11": { name: "Parkinson鱼", emoji: "🧠", poem: ["关注颤抖的手","在深海也要","稳稳地游"], desc: "世界帕金森日，关注神经健康" },
+            "4-12": { name: "航天鱼", emoji: "🚀", poem: ["飞向宇宙","浩瀚无穷","是人类的梦"], desc: "世界航天日，向往星空" },
+            "4-13": { name: "丝绸鱼", emoji: "🧣", poem: ["滑过指缝","柔软的触感","是东方的滑"], desc: "体表如丝绸般光滑" },
+            "4-14": { name: "黑色鱼", emoji: "⚫", poem: ["吸收所有光","在黑暗中隐","是夜的色"], desc: "纯黑如墨，神秘莫测" },
+            "4-15": { name: "圆规鱼", emoji: "📐", poem: ["画一个完美的圆","半径是梦想","周长是现实"], desc: "能画出完美的圆形轨迹" },
+            "4-16": { name: "蜡笔鱼", emoji: "🖍️", poem: ["画出童年的梦","颜色涂满海","是创造的乐"], desc: "能释放彩色蜡质，绘画海底" },
+            "4-17": { name: "血友病鱼", emoji: "🩸", poem: ["凝血是难题","小心别受伤","是脆弱的坚强"], desc: "世界血友病日，关注出血性疾病" },
+            "4-18": { name: "古迹鱼", emoji: "🏛️", poem: ["国际古迹日","保护文化遗产","是历史的锚"], desc: "背负古迹图案，守护历史" },
+            "4-19": { name: "自行车鱼", emoji: "🚲", poem: ["两个轮子转","绿色环保行","是风的自由"], desc: "能如自行车般快速移动" },
+            "4-20": { name: "谷雨鱼", emoji: "🌧️", poem: ["雨生百谷","滋润大地","是春的尾"], desc: "谷雨节气，带来最后春雨" },
+            "4-21": { name: "创意鱼", emoji: "💡", poem: ["世界创意日","脑洞大开","是新的生"], desc: "充满创意，想法天马行空" },
+            "4-22": { name: "地球鱼", emoji: "🌍", poem: ["世界地球日","只有一个家","请爱护"], desc: "地球日专属，环保使者" },
+            "4-23": { name: "读书鱼", emoji: "📚", poem: ["世界读书日","书中自有颜如玉","深海有书香"], desc: "热爱阅读，满腹经纶" },
+            "4-24": { name: "实验室鱼", emoji: "🧪", poem: ["试管里的秘密","科学的探索","是真理的光"], desc: "在实验室环境中生存，象征科学" },
+            "4-25": { name: "疟疾鱼", emoji: "🦟", poem: ["防治疟疾","健康无价","是生命的盾"], desc: "世界防治疟疾日，关注健康" },
+            "4-26": { name: "知识产权鱼", emoji: "©️", poem: ["保护原创","尊重智慧","是创造的权"], desc: "世界知识产权日，维护版权" },
+            "4-27": { name: "雕塑鱼", emoji: "🗿", poem: ["雕刻时光","凝固的美","是永恒的一瞬"], desc: "身体如雕塑，姿态优美" },
+            "4-28": { name: "安全生产鱼", emoji: "⛑️", poem: ["安全第一","预防为主","是生命的线"], desc: "世界安全生产日，注重安全" },
+            "4-29": { name: "舞蹈鱼", emoji: "💃", poem: ["世界舞蹈日","身体的诗","是动的画"], desc: "舞姿优美，如水中芭蕾" },
+            "4-30": { name: "爵士鱼", emoji: "🎷", poem: ["即兴的旋律","自由的灵魂","是夜的色"], desc: "国际爵士乐日，随性演奏" },
+
+            // 五月（劳动节，青年节，立夏，端午前）
+            "5-1": { name: "劳动鱼", emoji: "👷", poem: ["劳动最光荣","双手创造世界","是力的美"], desc: "劳动节专属，勤劳肯干" },
+            "5-2": { name: "asthma鱼", emoji: "🫁", poem: ["世界哮喘日","呼吸要顺畅","是生命的氧"], desc: "世界哮喘日，关注呼吸健康" },
+            "5-3": { name: "新闻自由鱼", emoji: "📰", poem: ["说出真相","监督权力","是第四权"], desc: "世界新闻自由日，言论自由" },
+            "5-4": { name: "青年鱼", emoji: "🔥", poem: ["五四的火炬","燃烧的青春","是国的未来"], desc: "青年节专属，热血激昂" },
+            "5-5": { name: "立夏鱼", emoji: "☀️", poem: ["立夏蛋挂胸","夏天开始了","是热的序"], desc: "立夏节气，标志夏季开始" },
+            "5-6": { name: "宇航员鱼", emoji: "👨‍🚀", poem: ["无国界的天空","探索宇宙","是人类的梦"], desc: "世界宇航员日，向往太空" },
+            "5-7": { name: "防盲鱼", emoji: "👁️", poem: ["世界防盲日","光明可贵","是窗的洁"], desc: "关注视力健康，预防失明" },
+            "5-8": { name: "红十字鱼", emoji: "⛑️", poem: ["人道主义","救死扶伤","是爱的十"], desc: "世界红十字日，人道救援" },
+            "5-9": { name: "战胜抑郁鱼", emoji: "🧠", poem: ["走出阴霾","阳光总在风雨后","是心晴"], desc: "世界战胜抑郁症日，关注心理健康" },
+            "5-10": { name: "母亲节鱼", emoji: "👩", poem: ["慈母手中线","游子身上衣","是爱的深"], desc: "母亲节专属，母爱伟大" },
+            "5-11": { name: "防肥胖鱼", emoji: "⚖️", poem: ["合理饮食","健康体重","是美的衡"], desc: "世界防治肥胖日，健康生活" },
+            "5-12": { name: "护士鱼", emoji: "👩‍⚕️", poem: ["白衣天使","细心照料","是生命的守"], desc: "国际护士节，致敬医护" },
+            "5-13": { name: "抱树鱼", emoji: "🌳", poem: ["世界抱树日","亲近自然","是根的连"], desc: "世界抱树日，亲近树木" },
+            "5-14": { name: "发条鱼", emoji: "🔩", poem: ["上紧的发条","滴答滴答走","是时间的律"], desc: "身体如机械，发条驱动" },
+            "5-15": { name: "家庭鱼", emoji: "👨‍👩‍👧", poem: ["国际家庭日","家是港湾","是爱的巢"], desc: "国际家庭日，重视家庭" },
+            "5-16": { name: "光之鱼", emoji: "✨", poem: ["生物发光","在黑暗中亮","是深的星"], desc: "能发出生物光，照亮深海" },
+            "5-17": { name: "电信鱼", emoji: "📡", poem: ["世界电信日","连接你我","是信息的桥"], desc: "世界电信日，通讯发达" },
+            "5-18": { name: "博物馆鱼", emoji: "🏛️", poem: ["国际博物馆日","历史的容器","是过去的窗"], desc: "国际博物馆日，保护文物" },
+            "5-19": { name: "炎症性肠病鱼", emoji: "🩺", poem: ["世界IBD日","关注肠道","是消化的和"], desc: "世界炎症性肠病日" },
+            "5-20": { name: "表白鱼", emoji: "💝", poem: ["520我爱你","在这个特殊日","说出心意"], desc: "网络情人节，传递爱意" },
+            "5-21": { name: "小满鱼", emoji: "🌾", poem: ["小满未满","麦粒渐满","是夏的半"], desc: "小满节气，作物渐熟" },
+            "5-22": { name: "生物多样性鱼", emoji: "🦋", poem: ["国际生物多样性日","万物共生","是生态的衡"], desc: "保护生物多样性" },
+            "5-23": { name: "海龟鱼", emoji: "🐢", poem: ["慢而坚定","背着壳旅行","是活的史"], desc: "世界海龟日，保护海龟" },
+            "5-24": { name: "偏头痛鱼", emoji: "🧠", poem: ["世界偏头痛日","缓解疼痛","是头的轻"], desc: "关注偏头痛问题" },
+            "5-25": { name: "失踪儿童鱼", emoji: "🧒", poem: ["国际失踪儿童日","早日回家","是家的盼"], desc: "关注失踪儿童问题" },
+            "5-26": { name: "向菲什鱼", emoji: "🎣", poem: ["世界向菲什日","可持续渔业","是海的馈"], desc: "关注可持续渔业" },
+            "5-27": { name: "赛狗鱼", emoji: "🐕", poem: ["世界赛狗日","速度与激情","是跑的乐"], desc: "虽然叫赛狗，但鱼也参与" },
+            "5-28": { name: "月经卫生鱼", emoji: "🩸", poem: ["世界月经卫生日","消除羞耻","是生的常"], desc: "关注女性生理健康" },
+            "5-29": { name: "维和人员鱼", emoji: "🕊️", poem: ["国际维和人员日","维护和平","是蓝的盔"], desc: "致敬维和人员" },
+            "5-30": { name: "多发性硬化鱼", emoji: "🧬", poem: ["世界多发性硬化日","关注神经","是身的稳"], desc: "关注多发性硬化症" },
+            "5-31": { name: "无烟鱼", emoji: "🚭", poem: ["世界无烟日","远离烟草","是肺的净"], desc: "世界无烟日，倡导健康" },
+
+            // 六月（儿童节，端午，夏至，夏季）
+            "6-1": { name: "气球鱼", emoji: "🎈", poem: ["儿童节快乐","彩色的梦飞上天","是心的轻"], desc: "儿童节专属，轻盈漂浮" },
+            "6-2": { name: "自行车鱼", emoji: "🚴", poem: ["世界自行车日","绿色出行","是风的追"], desc: "世界自行车日，环保出行" },
+            "6-3": { name: "自行车鱼", emoji: "🚲", poem: ["两个轮子转","健康又环保","是路的诗"], desc: "继续骑行，健康生活" },
+            "6-4": { name: "受侵略戕害鱼", emoji: "🕊️", poem: ["国际受侵略戕害日","铭记历史","是和平的贵"], desc: "铭记历史，珍爱和平" },
+            "6-5": { name: "环境鱼", emoji: "🌱", poem: ["世界环境日","绿水青山","是金的山"], desc: "世界环境日，保护环境" },
+            "6-6": { name: "俄语鱼", emoji: "🇷🇺", poem: ["联合国俄语日","普希金的诗","是语言的桥"], desc: "联合国俄语日，文化交流" },
+            "6-7": { name: "食品安全鱼", emoji: "🍽️", poem: ["世界食品安全日","吃得放心","是命的基"], desc: "关注食品安全" },
+            "6-8": { name: "海洋鱼", emoji: "🌊", poem: ["世界海洋日","蓝色星球","是生命的源"], desc: "世界海洋日，保护海洋" },
+            "6-9": { name: "档案鱼", emoji: "📁", poem: ["国际档案日","记录历史","是记忆的库"], desc: "国际档案日，保存记忆" },
+            "6-10": { name: "葡萄牙语鱼", emoji: "🇵🇹", poem: ["葡萄牙语日","卡蒙斯的诗","是语言的浪"], desc: "葡萄牙语日，文化多样" },
+            "6-11": { name: "中国人口鱼", emoji: "👥", poem: ["中国人口日","关注发展","是国的基"], desc: "关注人口问题" },
+            "6-12": { name: "无童工鱼", emoji: "🧒", poem: ["世界无童工日","童年要玩耍","是权的保"], desc: "消除童工现象" },
+            "6-13": { name: "缝纫机鱼", emoji: "🧵", poem: ["国际缝纫机日","针针线线","是衣的暖"], desc: "传统工艺的传承" },
+            "6-14": { name: "献血者鱼", emoji: "🩸", poem: ["世界献血者日","一滴血一片心","是生的礼"], desc: "无偿献血，拯救生命" },
+            "6-15": { name: "风电鱼", emoji: "💨", poem: ["全球风能日","清洁能源","是未来的电"], desc: "利用风能，绿色能源" },
+            "6-16": { name: "家政工鱼", emoji: "🧹", poem: ["国际家政工日","劳动尊严","是家的洁"], desc: "尊重家政劳动者" },
+            "6-17": { name: "防治荒漠化鱼", emoji: "🏜️", poem: ["世界防治荒漠化日","绿水青山","是沙的治"], desc: "防治土地荒漠化" },
+            "6-18": { name: "可持续美食鱼", emoji: "🍲", poem: ["可持续美食烹调日","健康饮食","是味的道"], desc: "关注可持续饮食" },
+            "6-19": { name: "消除冲突性暴力鱼", emoji: "🕊️", poem: ["消除冲突中暴力","保护妇女","是义的伸"], desc: "保护冲突中的弱势群体" },
+            "6-20": { name: "难民鱼", emoji: "🏃", poem: ["世界难民日","无家可归","是心的怜"], desc: "关注难民问题" },
+            "6-21": { name: "西瓜鱼", emoji: "🍉", poem: ["夏至的甜","红色的果肉黑色的籽","是夏天的味"], desc: "夏至专属，清凉解暑" },
+            "6-22": { name: "瑜伽鱼", emoji: "🧘", poem: ["国际瑜伽日","身心合一","是静的力"], desc: "瑜伽修行，身心平衡" },
+            "6-23": { name: "公共服务鱼", emoji: "🏛️", poem: ["联合国公务员日","服务人民","是公的仆"], desc: "致敬公共服务人员" },
+            "6-24": { name: "龙舟鱼", emoji: "🐉", poem: ["端午赛龙舟","鼓声震天响","是屈的念"], desc: "端午节专属，龙舟竞渡" },
+            "6-25": { name: "海员鱼", emoji: "⚓", poem: ["世界海员日","航行四海","是水的家"], desc: "致敬海员" },
+            "6-26": { name: "禁毒鱼", emoji: "🚫", poem: ["国际禁毒日","远离毒品","是命的珍"], desc: "珍爱生命，远离毒品" },
+            "6-27": { name: "糖尿病鱼", emoji: "🩺", poem: ["国际糖尿病日","控制血糖","是甜的限"], desc: "关注糖尿病防治" },
+            "6-28": { name: "保险鱼", emoji: "🛡️", poem: ["全国保险公众宣传日","风险保障","是安的网"], desc: "保险保障，安全网" },
+            "6-29": { name: "热带鱼", emoji: "🐠", poem: ["世界热带日","热情似火","是带的彩"], desc: "热带风情，色彩斑斓" },
+            "6-30": { name: "议会鱼", emoji: "🏛️", poem: ["国际议会日","民主殿堂","是议的政"], desc: "国际议会日，民主政治" },
+
+            // 七月（小暑，大暑，夏季，七夕）
+            "7-1": { name: "建筑鱼", emoji: "🏗️", poem: ["国际建筑日","凝固的音乐","是石的诗"], desc: "建筑艺术，凝固音乐" },
+            "7-2": { name: "体育记者鱼", emoji: "🎙️", poem: ["国际体育记者日","记录瞬间","是赛的解"], desc: "体育记者，记录精彩" },
+            "7-3": { name: "禁塑鱼", emoji: "🛍️", poem: ["国际禁塑日","拒绝白色污染","是海的净"], desc: "减少塑料使用" },
+            "7-4": { name: "美国独立鱼", emoji: "🇺🇸", poem: ["美国独立日","自由钟声","是立的宣"], desc: "美国国庆日" },
+            "7-5": { name: "护士鱼", emoji: "👩‍⚕️", poem: ["国际护士节","提灯女神","是夜的明"], desc: "国际护士节，致敬护士" },
+            "7-6": { name: "接吻鱼", emoji: "💋", poem: ["国际接吻日","一吻定情","是爱的印"], desc: "表达爱意，亲吻" },
+            "7-7": { name: "七夕鱼", emoji: "🎋", poem: ["七夕今宵看碧霄","牵牛织女渡河桥","是爱的桥"], desc: "七夕节专属，牛郎织女" },
+            "7-8": { name: "过敏鱼", emoji: "🤧", poem: ["世界过敏性疾病日","喷嚏连连","是敏的防"], desc: "关注过敏问题" },
+            "7-9": { name: "岩石鱼", emoji: "🪨", poem: ["世界岩石日","坚硬如石","是地的骨"], desc: "地质奇观，岩石之美" },
+            "7-10": { name: "纳豆鱼", emoji: "🫘", poem: ["世界纳豆日","黏黏的丝","是发酵的味"], desc: "日本纳豆文化" },
+            "7-11": { name: "人口鱼", emoji: "🌍", poem: ["世界人口日","关注发展","是人的数"], desc: "世界人口日" },
+            "7-12": { name: "折纸鱼", emoji: "📄", poem: ["国际折纸日","一纸千变","是手的魔"], desc: "折纸艺术，千变万化" },
+            "7-13": { name: "岩石鱼", emoji: "⛰️", poem: ["世界岩石日","山的故事","是石的记"], desc: "继续探索岩石" },
+            "7-14": { name: "黑色鱼", emoji: "⚫", poem: ["法国国庆日","三色旗飘扬","是革命的色"], desc: "法国国庆日" },
+            "7-15": { name: "技能鱼", emoji: "🔧", poem: ["世界青年技能日","一技之长","是生的本"], desc: "技能学习，立足之本" },
+            "7-16": { name: "蛇鱼", emoji: "🐍", poem: ["世界蛇日","蜿蜒前行","是灵的物"], desc: "世界蛇日，了解爬行动物" },
+            "7-17": { name: "表情符号鱼", emoji: "😊", poem: ["世界表情符号日",":-)哈哈","是图的话"], desc: "表情符号，沟通新语言" },
+            "7-18": { name: "曼德拉鱼", emoji: "✌️", poem: ["纳尔逊·曼德拉日","自由平等","是权的斗"], desc: "纪念曼德拉" },
+            "7-19": { name: "海豚鱼", emoji: "🐬", poem: ["世界海豚日","聪明的微笑","是海的灵"], desc: "保护海豚" },
+            "7-20": { name: "国际象棋鱼", emoji: "♟️", poem: ["国际象棋日","黑白格子","是智的弈"], desc: "国际象棋，智力运动" },
+            "7-21": { name: "黄貂鱼", emoji: "🐡", poem: ["世界黄貂鱼日","扁平的身体","是沙的藏"], desc: "保护黄貂鱼" },
+            "7-22": { name: "大暑鱼", emoji: "🌡️", poem: ["大暑热难当","汗流浃背","是夏的极"], desc: "大暑节气，最热时刻" },
+            "7-23": { name: "鲸鱼鱼", emoji: "🐋", poem: ["世界鲸鱼日","巨大的温柔","是歌的唱"], desc: "保护鲸鱼" },
+            "7-24": { name: "表鱼", emoji: "⌚", poem: ["国际表日","滴答滴答","是时的计"], desc: "钟表文化" },
+            "7-25": { name: "保健鱼", emoji: "💊", poem: ["世界预防溺水日","安全游泳","是命的保"], desc: "预防溺水" },
+            "7-26": { name: "红树林鱼", emoji: "🌳", poem: ["保护红树林日","海岸卫士","是根的固"], desc: "保护红树林生态" },
+            "7-27": { name: "头部创伤鱼", emoji: "🧠", poem: ["世界头部创伤日","保护大脑","是思的护"], desc: "关注头部保护" },
+            "7-28": { name: "肝炎鱼", emoji: "🩺", poem: ["世界肝炎日","肝脏健康","是毒的排"], desc: "防治肝炎" },
+            "7-29": { name: "老虎鱼", emoji: "🐅", poem: ["世界老虎日","森林之王","是威的武"], desc: "保护老虎" },
+            "7-30": { name: "友谊鱼", emoji: "🤝", poem: ["国际友谊日","朋友一生","是情的深"], desc: "珍惜友谊" },
+            "7-31": { name: "护林员鱼", emoji: "🌲", poem: ["世界护林员日","守护绿色","是林的警"], desc: "致敬护林员" },
+
+            // 八月（立秋，处暑，七夕，中元）
+            "8-1": { name: "脊柱鱼", emoji: "🦴", poem: ["世界脊柱日","挺直脊梁","是身的柱"], desc: "关注脊柱健康" },
+            "8-2": { name: "啤酒鱼", emoji: "🍺", poem: ["国际啤酒日","泡沫的欢","是醉的乐"], desc: "啤酒文化，适量饮用" },
+            "8-3": { name: "西瓜鱼", emoji: "🍉", poem: ["立秋前的甜","一刀切下红","是夏的尾"], desc: "夏日尾声，西瓜解暑" },
+            "8-4": { name: "猫头鹰鱼", emoji: "🦉", poem: ["国际猫头鹰日","夜的眼睛","是智的象"], desc: "保护猫头鹰" },
+            "8-5": { name: "交通灯鱼", emoji: "🚦", poem: ["红灯停绿灯行","黄灯等一等","是路的则"], desc: "交通安全" },
+            "8-6": { name: "轰炸鱼", emoji: "💣", poem: ["广岛长崎纪念日","和平珍贵","是战的痛"], desc: "铭记历史，珍爱和平" },
+            "8-7": { name: "lighthouse鱼", emoji: "🗼", poem: ["国际灯塔日","指引航向","是暗的光"], desc: "灯塔精神，指引方向" },
+            "8-8": { name: "猫咪鱼", emoji: "🐱", poem: ["国际猫咪日","喵星人的统治","是萌的力"], desc: "猫咪节日，可爱统治" },
+            "8-9": { name: "土著人鱼", emoji: "🏹", poem: ["世界土著人民日","原始的智慧","是根的文"], desc: "保护土著文化" },
+            "8-10": { name: "狮子鱼", emoji: "🦁", poem: ["世界狮子日","草原之王","是勇的象"], desc: "保护狮子" },
+            "8-11": { name: "山岳鱼", emoji: "⛰️", poem: ["国际山岳日","高耸入云","是地的脊"], desc: "保护山地生态" },
+            "8-12": { name: "大象鱼", emoji: "🐘", poem: ["世界大象日","记忆超群","是大的温"], desc: "保护大象" },
+            "8-13": { name: "左撇子鱼", emoji: "✋", poem: ["国际左撇子日","左手天才","是别的特"], desc: "左撇子专属节日" },
+            "8-14": { name: "蜥蜴鱼", emoji: "🦎", poem: ["世界蜥蜴日","冷血动物","是变的色"], desc: "保护蜥蜴" },
+            "8-15": { name: "二战结束鱼", emoji: "🕊️", poem: ["日本投降日","战争结束","是平的始"], desc: "铭记历史" },
+            "8-16": { name: "摄影鱼", emoji: "📷", poem: ["世界摄影日","定格瞬间","是光的画"], desc: "摄影艺术" },
+            "8-17": { name: "猩猩鱼", emoji: "🦍", poem: ["世界猩猩日","人类的近亲","是灵的动"], desc: "保护猩猩" },
+            "8-18": { name: "软木鱼", emoji: "🍾", poem: ["国际软木日","瓶塞的记忆","是木的弹"], desc: "软木文化" },
+            "8-19": { name: "摄影鱼", emoji: "📸", poem: ["世界摄影日","镜头背后","是眼的延"], desc: "继续摄影主题" },
+            "8-20": { name: "蚊子鱼", emoji: "🦟", poem: ["世界蚊子日","讨厌的嗡嗡","是病的媒"], desc: "关注蚊虫防治" },
+            "8-21": { name: "脊柱裂鱼", emoji: "🦴", poem: ["世界脊柱裂日","神经管缺陷","是防的重"], desc: "关注脊柱裂" },
+            "8-22": { name: "中元鱼", emoji: "👻", poem: ["中元节鬼门开","祭祖思亲","是魂的归"], desc: "中元节，祭祖" },
+            "8-23": { name: "处暑鱼", emoji: "🍂", poem: ["处暑天渐凉","秋意渐浓","是夏的终"], desc: "处暑节气，暑气结束" },
+            "8-24": { name: "面包鱼", emoji: "🍞", poem: ["世界面包日","麦香四溢","是食的基"], desc: "面包文化" },
+            "8-25": { name: "香蕉鱼", emoji: "🍌", poem: ["黄色的弯月","剥皮即食","是果的便"], desc: "香蕉水果" },
+            "8-26": { name: "狗鱼", emoji: "🐕", poem: ["世界狗日","人类的朋友","是忠的伴"], desc: "爱狗日" },
+            "8-27": { name: "游戏鱼", emoji: "🎮", poem: ["世界游戏日","虚拟世界","是乐的源"], desc: "游戏文化" },
+            "8-28": { name: "蝴蝶结鱼", emoji: "🎀", poem: ["国际蝴蝶结日","优雅的结","是礼的装"], desc: "蝴蝶结装饰" },
+            "8-29": { name: "蘑菇鱼", emoji: "🍄", poem: ["世界蘑菇日","伞盖撑开","是林的味"], desc: "蘑菇文化" },
+            "8-30": { name: "鲸鱼鱼", emoji: "🐋", poem: ["世界鲸鱼日","深海的歌唱","是大的温"], desc: "继续保护鲸鱼" },
+            "8-31": { name: "trail鱼", emoji: "🥾", poem: ["世界trail日","徒步旅行","是脚的丈"], desc: "徒步文化" },
+
+            // 九月（白露，秋分，中秋，教师节）
+            "9-1": { name: "开学鱼", emoji: "🎒", poem: ["九月一日开学","书包沉甸甸","是知的始"], desc: "开学日，新学期" },
+            "9-2": { name: "椰子鱼", emoji: "🥥", poem: ["世界椰子日","热带风情","是椰的汁"], desc: "椰子文化" },
+            "9-3": { name: "天空鱼", emoji: "☁️", poem: ["世界天空日","蓝天白云","是空的净"], desc: "保护天空" },
+            "9-4": { name: "性感鱼", emoji: "💋", poem: ["世界性感日","自信魅力","是体的美"], desc: "自信展现魅力" },
+            "9-5": { name: "慈善鱼", emoji: "❤️", poem: ["国际慈善日","日行一善","是心的暖"], desc: "国际慈善日" },
+            "9-6": { name: "读唇鱼", emoji: "👄", poem: ["世界读唇日","无声交流","是语的替"], desc: "关注听障人士" },
+            "9-7": { name: "清洁空气鱼", emoji: "💨", poem: ["国际清洁空气日","呼吸新鲜","是肺的净"], desc: "保护空气质量" },
+            "9-8": { name: "扫盲鱼", emoji: "📖", poem: ["国际扫盲日","知识改变命运","是文的力"], desc: "消除文盲" },
+            "9-9": { name: "拥抱熊鱼", emoji: "🧸", poem: ["泰迪熊日","温暖的拥抱","是童的伴"], desc: "泰迪熊日" },
+            "9-10": { name: "教师鱼", emoji: "👨‍🏫", poem: ["春蚕到死丝方尽","蜡炬成灰泪始干","是师的恩"], desc: "教师节，感恩师恩" },
+            "9-11": { name: "急救鱼", emoji: "🚑", poem: ["世界急救日","黄金四分钟","是命的抢"], desc: "急救知识" },
+            "9-12": { name: "联合国鱼", emoji: "🌐", poem: ["联合国日","世界和平","是联的力"], desc: "联合国日" },
+            "9-13": { name: "程序员鱼", emoji: "💻", poem: ["程序员日","1024的狂欢","是码的世界"], desc: "程序员节" },
+            "9-14": { name: "海豚鱼", emoji: "🐬", poem: ["世界海豚日","聪明的微笑","是海的灵"], desc: "保护海豚" },
+            "9-15": { name: "民主鱼", emoji: "🗳️", poem: ["国际民主日","人民当家","是主的权"], desc: "国际民主日" },
+            "9-16": { name: "臭氧鱼", emoji: "🛡️", poem: ["国际臭氧层日","保护天空","是紫外线的盾"], desc: "保护臭氧层" },
+            "9-17": { name: "熊猫鱼", emoji: "🐼", poem: ["世界熊猫日","国宝级的萌","是黑白的美"], desc: "保护大熊猫" },
+            "9-18": { name: "监测鱼", emoji: "📊", poem: ["世界监测日","数据说话","是实的证"], desc: "监测环境数据" },
+            "9-19": { name: "海盗鱼", emoji: "🏴‍☠️", poem: ["国际海盗日"," ahoy matey","是海的盗"], desc: "海盗文化" },
+            "9-20": { name: "犀牛鱼", emoji: "🦏", poem: ["世界犀牛日","角的价值","是生的危"], desc: "保护犀牛" },
+            "9-21": { name: "和平鱼", emoji: "🕊️", poem: ["国际和平日","世界和平","是人类的梦"], desc: "国际和平日" },
+            "9-22": { name: "无车鱼", emoji: "🚫🚗", poem: ["世界无车日","绿色出行","是空的净"], desc: "无车日，环保出行" },
+            "9-23": { name: "秋分鱼", emoji: "⚖️", poem: ["秋分昼夜平","阴阳平衡","是秋的半"], desc: "秋分节气" },
+            "9-24": { name: "河马鱼", emoji: "🦛", poem: ["世界河马日","胖胖的可爱","是河的霸"], desc: "保护河马" },
+            "9-25": { name: "龙虾鱼", emoji: "🦞", poem: ["世界龙虾日","红色的美味","是海的鲜"], desc: "龙虾文化" },
+            "9-26": { name: "避孕鱼", emoji: "💊", poem: ["世界避孕日","科学避孕","是育的责"], desc: "科学避孕" },
+            "9-27": { name: "旅游鱼", emoji: "✈️", poem: ["世界旅游日","读万卷书","是行的路"], desc: "世界旅游日" },
+            "9-28": { name: "狂犬病鱼", emoji: "🐕", poem: ["世界狂犬病日","预防为主","是病的控"], desc: "防治狂犬病" },
+            "9-29": { name: "心脏鱼", emoji: "❤️", poem: ["世界心脏日","跳动生命","是泵的力"], desc: "保护心脏" },
+            "9-30": { name: "翻译鱼", emoji: "🌐", poem: ["国际翻译日","语言的桥","是文的通"], desc: "翻译文化" },
+
+            // 十月（国庆，重阳，万圣，寒露，霜降）
+            "10-1": { name: "五星鱼", emoji: "🇨🇳", poem: ["五星红旗迎风飘扬","胜利歌声多么响亮","是国的庆"], desc: "国庆节，祖国生日" },
+            "10-2": { name: "非暴力鱼", emoji: "✌️", poem: ["国际非暴力日","和平抗争","是甘地的道"], desc: "非暴力不合作" },
+            "10-3": { name: "建筑鱼", emoji: "🏛️", poem: ["世界建筑日","凝固的音乐","是石的诗"], desc: "建筑艺术" },
+            "10-4": { name: "动物鱼", emoji: "🐾", poem: ["世界动物日","保护动物","是生的权"], desc: "世界动物日" },
+            "10-5": { name: "教师鱼", emoji: "👩‍🏫", poem: ["世界教师日","传道授业","是师的业"], desc: "世界教师日" },
+            "10-6": { name: "微笑鱼", emoji: "😊", poem: ["世界微笑日","笑一笑十年少","是脸的阳"], desc: "微笑的力量" },
+            "10-7": { name: "棉花鱼", emoji: "🧶", poem: ["世界棉花日","柔软的温暖","是衣的料"], desc: "棉花文化" },
+            "10-8": { name: "寒露鱼", emoji: "💧", poem: ["寒露凝霜","露水变冷","是秋的深"], desc: "寒露节气" },
+            "10-9": { name: "邮政鱼", emoji: "📮", poem: ["世界邮政日","书信传情","是邮的使"], desc: "邮政服务" },
+            "10-10": { name: "精神卫生鱼", emoji: "🧠", poem: ["世界精神卫生日","心理健康","是心的医"], desc: "关注心理健康" },
+            "10-11": { name: "鸡蛋鱼", emoji: "🥚", poem: ["世界鸡蛋日","营养的早餐","是白的蛋"], desc: "鸡蛋营养" },
+            "10-12": { name: "关节炎鱼", emoji: "🦴", poem: ["世界关节炎日","关节保养","是动的自"], desc: "防治关节炎" },
+            "10-13": { name: "减灾鱼", emoji: "🌪️", poem: ["国际减灾日","灾害防范","是安的网"], desc: "灾害防治" },
+            "10-14": { name: "标准鱼", emoji: "📏", poem: ["世界标准日","规范统一","是质的保"], desc: "标准化" },
+            "10-15": { name: "洗手鱼", emoji: "🧼", poem: ["全球洗手日","干净的手","是病的防"], desc: "勤洗手" },
+            "10-16": { name: "粮食鱼", emoji: "🌾", poem: ["世界粮食日","粒粒皆辛苦","是食的珍"], desc: "珍惜粮食" },
+            "10-17": { name: "消除贫困鱼", emoji: "🤝", poem: ["国际消除贫困日","共同富裕","是贫的消"], desc: "消除贫困" },
+            "10-18": { name: "巧克力鱼", emoji: "🍫", poem: ["世界巧克力日","甜蜜的苦涩","是爱的味"], desc: "巧克力文化" },
+            "10-19": { name: "骨质疏松鱼", emoji: "🦴", poem: ["世界骨质疏松日","骨骼强健","是钙的补"], desc: "防治骨质疏松" },
+            "10-20": { name: "统计鱼", emoji: "📊", poem: ["世界统计日","数据说话","是实的证"], desc: "统计学" },
+            "10-21": { name: "苹果鱼", emoji: "🍎", poem: ["世界苹果日","一天一苹果","是医的远"], desc: "苹果营养" },
+            "10-22": { name: "传统医学鱼", emoji: "🩺", poem: ["世界传统医药日","中医中药","是古的智"], desc: "传统医学" },
+            "10-23": { name: "霜降鱼", emoji: "❄️", poem: ["霜降见霜","米谷满仓","是冬的预"], desc: "霜降节气" },
+            "10-24": { name: "发展信息鱼", emoji: "💻", poem: ["世界发展信息日","信息时代","是知的力"], desc: "信息发展" },
+            "10-25": { name: "意面鱼", emoji: "🍝", poem: ["世界意面日","意大利的味道","是面的长"], desc: "意大利面" },
+            "10-26": { name: "枫叶鱼", emoji: "🍁", poem: ["霜叶红于二月花","秋天的颜色","是枫的红"], desc: "枫叶观赏" },
+            "10-27": { name: "黑猫鱼", emoji: "🐈‍⬛", poem: ["黑猫警长","抓住老鼠","是警的威"], desc: "黑猫文化" },
+            "10-28": { name: "动画鱼", emoji: "🎬", poem: ["世界动画日","二次元世界","是画的动"], desc: "动画艺术" },
+            "10-29": { name: "银屑病鱼", emoji: "🩹", poem: ["世界银屑病日","皮肤健康","是肤的护"], desc: "关注银屑病" },
+            "10-30": { name: "鬼怪鱼", emoji: "👻", poem: ["万圣节前夜","鬼怪出没","是恐的乐"], desc: "万圣节前夕" },
+            "10-31": { name: "南瓜鱼", emoji: "🎃", poem: ["万圣节快乐","南瓜灯亮起","是巫的夜"], desc: "万圣节专属" },
+
+            // 十一月（立冬，小雪，深秋）
+            "11-1": { name: "素食鱼", emoji: "🥗", poem: ["世界素食日","健康饮食","是素的清"], desc: "素食文化" },
+            "11-2": { name: "终止暴力鱼", emoji: "🕊️", poem: ["终止针对妇女暴力","零容忍","是权的护"], desc: "消除暴力" },
+            "11-3": { name: "jellyfish鱼", emoji: "🎐", poem: ["世界jellyfish日","透明的伞","是海的幽"], desc: "水母之美" },
+            "11-4": { name: "书签鱼", emoji: "🔖", poem: ["国际书签日","标记页码","是读的伴"], desc: "书签文化" },
+            "11-5": { name: "海啸鱼", emoji: "🌊", poem: ["世界海啸日","防灾减灾","是波的警"], desc: "海啸预警" },
+            "11-6": { name: "防止战争鱼", emoji: "🕊️", poem: ["防止战争和武装冲突","和平珍贵","是战的止"], desc: "维护和平" },
+            "11-7": { name: "立冬鱼", emoji: "❄️", poem: ["立冬水始冰","地始冻","是冬的始"], desc: "立冬节气" },
+            "11-8": { name: "放射鱼", emoji: "☢️", poem: ["世界放射日","X光透视","是影的医"], desc: "放射医学" },
+            "11-9": { name: "消防鱼", emoji: "🚒", poem: ["全国消防日","烈火英雄","是火的逆"], desc: "消防安全" },
+            "11-10": { name: "科学鱼", emoji: "🔬", poem: ["世界科学日","探索未知","是知的边"], desc: "科学发展" },
+            "11-11": { name: "光棍鱼", emoji: "🎋", poem: ["双十一购物节","单身也快乐","是独的贵"], desc: "光棍节/购物节" },
+            "11-12": { name: "肺炎鱼", emoji: "🫁", poem: ["世界肺炎日","呼吸健康","是肺的护"], desc: "防治肺炎" },
+            "11-13": { name: "善意鱼", emoji: "😊", poem: ["世界善意日","日行一善","是心的暖"], desc: "传递善意" },
+            "11-14": { name: "糖尿病鱼", emoji: "🩺", poem: ["联合国糖尿病日","控制血糖","是甜的限"], desc: "防治糖尿病" },
+            "11-15": { name: "回收鱼", emoji: "♻️", poem: ["世界回收日","循环利用","是源的节"], desc: "回收利用" },
+            "11-16": { name: "宽容鱼", emoji: "🤝", poem: ["国际宽容日","海纳百川","是容的度"], desc: "宽容待人" },
+            "11-17": { name: "早产儿鱼", emoji: "👶", poem: ["世界早产儿日","呵护生命","是早的护"], desc: "关爱早产儿" },
+            "11-18": { name: "哲学鱼", emoji: "🤔", poem: ["世界哲学日","思考人生","是智的思"], desc: "哲学思考" },
+            "11-19": { name: "厕所鱼", emoji: "🚽", poem: ["世界厕所日","卫生设施","是生的基"], desc: "卫生设施" },
+            "11-20": { name: "儿童鱼", emoji: "🧒", poem: ["世界儿童日","保护未来","是花的护"], desc: "保护儿童" },
+            "11-21": { name: "问候鱼", emoji: "👋", poem: ["世界问候日","你好谢谢","是礼的始"], desc: "礼貌问候" },
+            "11-22": { name: "小雪鱼", emoji: "❄️", poem: ["小雪气寒","而将雪矣","是冬的深"], desc: "小雪节气" },
+            "11-23": { name: "纤维鱼", emoji: "🧶", poem: ["世界纤维日","纺织艺术","是线的织"], desc: "纤维文化" },
+            "11-24": { name: "进化鱼", emoji: "🧬", poem: ["进化论日","物竞天择","是生的演"], desc: "进化论" },
+            "11-25": { name: "消除暴力鱼", emoji: "🛑", poem: ["消除对妇女暴力","橙色世界","是暴的止"], desc: "消除暴力" },
+            "11-26": { name: "蛋糕鱼", emoji: "🎂", poem: ["世界蛋糕日","甜蜜的庆祝","是糕的软"], desc: "蛋糕文化" },
+            "11-27": { name: "海獭鱼", emoji: "🦦", poem: ["世界海獭日","可爱的漂浮","是獭的萌"], desc: "保护海獭" },
+            "11-28": { name: "感恩节鱼", emoji: "🦃", poem: ["感恩节快乐","火鸡大餐","是恩的谢"], desc: "感恩节" },
+            "11-29": { name: "银河鱼", emoji: "🌌", poem: ["国际银河日","星河灿烂","是宇的美"], desc: "银河系" },
+            "11-30": { name: "安全鱼", emoji: "🛡️", poem: ["计算机安全日","防火墙","是据的护"], desc: "网络安全" },
+
+            // 十二月（大雪，冬至，圣诞，新年）
+            "12-1": { name: "艾滋病鱼", emoji: "🎗️", poem: ["世界艾滋病日","红丝带飘扬","是爱的防"], desc: "防治艾滋病" },
+            "12-2": { name: "废除奴隶制鱼", emoji: "⛓️", poem: ["废除奴隶制日","自由无价","是身的解"], desc: "废除奴隶制" },
+            "12-3": { name: "残疾人鱼", emoji: "♿", poem: ["国际残疾人日","平等参与","是障的消"], desc: "关爱残疾人" },
+            "12-4": { name: "海盗鱼", emoji: "🏴‍☠️", poem: ["海盗日","海上冒险","是盗的浪"], desc: "海盗文化" },
+            "12-5": { name: "志愿者鱼", emoji: "🤝", poem: ["国际志愿者日","无私奉献","是愿的心"], desc: "志愿服务" },
+            "12-6": { name: "民航鱼", emoji: "✈️", poem: ["国际民航日","飞向蓝天","是航的安"], desc: "民航发展" },
+            "12-7": { name: "大雪鱼", emoji: "❄️", poem: ["大雪纷飞","千里冰封","是冬的盛"], desc: "大雪节气" },
+            "12-8": { name: "圣母鱼", emoji: "👼", poem: ["圣母无染原罪","纯洁无瑕","是圣的光"], desc: "宗教节日" },
+            "12-9": { name: "反腐败鱼", emoji: "⚖️", poem: ["国际反腐败日","廉洁政治","是贪的惩"], desc: "反腐败" },
+            "12-10": { name: "人权鱼", emoji: "✊", poem: ["世界人权日","生而平等","是权的保"], desc: "人权保护" },
+            "12-11": { name: "山鱼", emoji: "⛰️", poem: ["国际山日","高山仰止","是峰的峻"], desc: "保护山地" },
+            "12-12": { name: "中性鱼", emoji: "⚧", poem: ["国际中立日","不偏不倚","是立的场"], desc: "中立政策" },
+            "12-13": { name: "南京鱼", emoji: "🕯️", poem: ["国家公祭日","铭记历史","是殇的祭"], desc: "南京大屠杀公祭" },
+            "12-14": { name: "猴子鱼", emoji: "🐒", poem: ["世界猴子日","灵长类的智","是猴的顽"], desc: "保护猴子" },
+            "12-15": { name: "茶叶鱼", emoji: "🍵", poem: ["世界茶叶日","茶香四溢","是叶的沉"], desc: "茶文化" },
+            "12-16": { name: "migrate鱼", emoji: "🦋", poem: ["migrate日","迁徙的旅程","是生的寻"], desc: "迁徙物种" },
+            "12-17": { name: "减少暴力鱼", emoji: "🕊️", poem: ["减少暴力日","和平相处","是暴的减"], desc: "减少暴力" },
+            "12-18": { name: "阿拉伯语鱼", emoji: "🇦🇪", poem: ["世界阿拉伯语日","沙漠的语言","是文的古"], desc: "阿拉伯文化" },
+            "12-19": { name: "团结鱼", emoji: "🤝", poem: ["南南合作日","团结互助","是作的力量"], desc: "南南合作" },
+            "12-20": { name: "人类团结鱼", emoji: "🌍", poem: ["国际人类团结日","同舟共济","是结的力"], desc: "人类团结" },
+            "12-21": { name: "排球鱼", emoji: "🏐", poem: ["世界排球日","扣杀拦网","是球的跃"], desc: "排球运动" },
+            "12-22": { name: "冬至鱼", emoji: "🥟", poem: ["冬至大如年","饺子就汤圆","是夜的最"], desc: "冬至节气，昼最短夜最长" },
+            "12-23": { name: "平安夜鱼", emoji: "🍎", poem: ["平安夜平安","苹果红彤彤","是夜的安"], desc: "平安夜，苹果象征平安" },
+            "12-24": { name: "圣诞夜鱼", emoji: "🌟", poem: ["圣诞前夜","星星点灯","是礼的待"], desc: "圣诞夜，等待礼物" },
+            "12-25": { name: "圣诞鱼", emoji: "🎄", poem: ["圣诞节快乐","圣诞树下的梦","是诞的喜"], desc: "圣诞节，耶稣诞生" },
+            "12-26": { name: "礼物鱼", emoji: "🎁", poem: ["拆礼物的惊喜","盒子里的心","是赠的乐"], desc: "拆礼物，分享快乐" },
+            "12-27": { name: "防疫鱼", emoji: "💉", poem: ["国际防疫日","预防疾病","是健的防"], desc: "疾病预防" },
+            "12-28": { name: "电影鱼", emoji: "🎬", poem: ["世界电影日","银幕人生","是影的梦"], desc: "电影艺术" },
+            "12-29": { name: "生物多样性鱼", emoji: "🌿", poem: ["生物多样性日","万物共生","是态的衡"], desc: "保护生物多样性" },
+            "12-30": { name: "菲律宾鱼", emoji: "🇵🇭", poem: ["世界菲律宾日","千岛之国","是菲的风"], desc: "菲律宾文化" },
+            "12-31": { name: "除夕鱼", emoji: "🎊", poem: ["一年最后的夜","倒计时开始","是新的待"], desc: "跨年夜，辞旧迎新" }
+        };
+
+        // 补充缺失的日期（简单填充，确保365天完整）
+        function fillMissingDays() {
+            const months = [1,2,3,4,5,6,7,8,9,10,11,12];
+            const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+            
+            const extras = [
+                {name: "波点鱼", emoji: "🔴", desc: "身上布满圆点，像草间弥生的艺术"},
+                {name: "条纹鱼", emoji: "📊", desc: "斑马般的条纹，在海草中隐身"},
+                {name: "星星鱼", emoji: "⭐", desc: "五角星的形状，夜晚发光"},
+                {name: "月亮鱼", emoji: "🌙", desc: "弯月形态，银辉洒落"},
+                {name: "太阳鱼", emoji: "☀️", desc: "圆形发光体，是深海的太阳"},
+                {name: "云朵鱼", emoji: "☁️", desc: "蓬松柔软，像棉花糖"},
+                {name: "石头鱼", emoji: "🪨", desc: "伪装成岩石，不动如山"},
+                {name: "珊瑚鱼", emoji: "🪸", desc: "分支状触角，建造海底花园"},
+                {name: "海草鱼", emoji: "🌿", desc: "细长叶片，随水摇摆"},
+                {name: "贝壳鱼", emoji: "🐚", desc: "背着硬壳，保护柔软内心"},
+                {name: "珍珠鱼", emoji: "⚪", desc: "体内孕育珍珠，珍贵无比"},
+                {name: "波浪鱼", emoji: "〰️", desc: "身体如波浪，起伏不定"}
+            ];
+            
+            let extraIndex = 0;
+            
+            months.forEach((month, idx) => {
+                for(let day = 1; day <= daysInMonth[idx]; day++) {
+                    const key = `${month}-${day}`;
+                    if(!fishDatabase[key]) {
+                        const extra = extras[extraIndex % extras.length];
+                        fishDatabase[key] = {
+                            name: extra.name + (Math.floor(extraIndex/12) > 0 ? Math.floor(extraIndex/12)+1 : ""),
+                            emoji: extra.emoji,
+                            poem: ["在深蓝褶皱里游弋","吞吐着月光的碎片","是"+extra.name+"的舞"],
+                            desc: extra.desc
+                        };
+                        extraIndex++;
+                    }
+                }
+            });
+        }
+
+        fillMissingDays();
+
+        // 日历逻辑
+        let currentDate = new Date(2026, 0, 1);
+        const today = new Date();
+
+        function init() {
+            createBubbles();
+            renderCalendar();
+        }
+
+        function createBubbles() {
+            const container = document.getElementById('oceanBg');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.width = bubble.style.height = Math.random() * 30 + 10 + 'px';
+                bubble.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(bubble);
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            document.getElementById('monthTitle').textContent = `${year}年 ${month + 1}月`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const grid = document.getElementById('daysGrid');
+            grid.innerHTML = '';
+            
+            // 上月
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const cell = createDayCell(daysInPrevMonth - i, true, month - 1);
+                grid.appendChild(cell);
+            }
+            
+            // 当月
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = createDayCell(i, false, month);
+                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                    cell.classList.add('today');
+                }
+                grid.appendChild(cell);
+            }
+            
+            // 下月
+            const remaining = 42 - (firstDay + daysInMonth);
+            for (let i = 1; i <= remaining; i++) {
+                const cell = createDayCell(i, true, month + 1);
+                grid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(day, isOtherMonth, month) {
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
+            if (isOtherMonth) cell.classList.add('other-month');
+            
+            const actualMonth = month < 0 ? 11 : month > 11 ? 0 : month;
+            const key = `${actualMonth + 1}-${day}`;
+            const fish = fishDatabase[key] || { emoji: "🐟", name: "神秘鱼" };
+            
+            cell.innerHTML = `
+                <div class="day-number">${day}</div>
+                <div class="fish-icon">${fish.emoji}</div>
+            `;
+            
+            cell.onclick = () => showFishDetail(actualMonth + 1, day);
+            return cell;
+        }
+
+        function showFishDetail(month, day) {
+            const key = `${month}-${day}`;
+            const fish = fishDatabase[key];
+            if (!fish) return;
+            
+            document.getElementById('fishEmoji').textContent = fish.emoji;
+            document.getElementById('fishName').textContent = fish.name;
+            document.getElementById('fishDate').textContent = `2026年${month}月${day}日`;
+            document.getElementById('fishDesc').textContent = fish.desc;
+            
+            const poemDiv = document.getElementById('fishPoem');
+            poemDiv.innerHTML = fish.poem.map(line => `<p>${line}</p>`).join('');
+            
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'modal' || event.target.className === 'close-btn') {
+                document.getElementById('modal').classList.remove('active');
+            }
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        init();
+    </script>
+</body>
+</html>

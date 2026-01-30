@@ -10,17 +10,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background: linear-gradient(180deg, #000814 0%, #001d3d 50%, #003566 100%);
+            background: linear-gradient(180deg, #000814 0%, #001d3d 40%, #003566 80%, #1a0630 100%);
             min-height: 100vh;
             font-family: 'Noto Serif SC', serif;
-            color: #caf0f8;
+            color: #e0f7fa;
             overflow-x: hidden;
         }
 
         .ocean-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(0,100,200,0.1) 0%, transparent 70%);
+            background: 
+                radial-gradient(circle at 70% 30%, rgba(26, 6, 48, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(0, 119, 182, 0.2) 0%, transparent 50%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 11px),
+                repeating-linear-gradient(-45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 11px);
             z-index: 0;
             pointer-events: none;
         }
@@ -28,16 +32,17 @@
         .bubble {
             position: absolute;
             bottom: -100px;
-            background: radial-gradient(circle at 30% 30%, rgba(202,240,248,0.3), transparent);
+            background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
             border-radius: 50%;
-            border: 1px solid rgba(202,240,248,0.2);
-            animation: rise 10s infinite ease-in;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            animation: rise 12s infinite ease-in;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
         }
 
         @keyframes rise {
             0% { transform: translateY(0) scale(1); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
             100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
         }
 
@@ -57,19 +62,23 @@
         .title {
             font-family: 'ZCOOL XiaoWei', serif;
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #90e0ef, #00b4d8, #caf0f8);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 40%, #FF8C00 70%, #DAA520 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
             letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
         }
 
         .calendar-box {
-            background: rgba(0, 20, 40, 0.7);
-            border: 2px solid rgba(144, 224, 239, 0.3);
+            background: rgba(0, 15, 30, 0.6);
+            border: 2px solid rgba(255, 215, 0, 0.3);
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 0 40px rgba(0, 180, 216, 0.2);
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.2),
+                inset 0 0 30px rgba(0, 119, 182, 0.1);
+            backdrop-filter: blur(8px);
         }
 
         .month-nav {
@@ -82,8 +91,8 @@
 
         .nav-btn {
             background: transparent;
-            border: 2px solid rgba(144, 224, 239, 0.5);
-            color: #90e0ef;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            color: #FFD700;
             width: 40px; 
             height: 40px;
             border-radius: 50%;
@@ -93,19 +102,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
 
         .nav-btn:hover {
-            background: rgba(144, 224, 239, 0.2);
+            background: rgba(255, 215, 0, 0.2);
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(144, 224, 239, 0.4);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            border-color: #FFD700;
         }
 
         .month-title {
             font-size: 1.5rem;
-            color: #caf0f8;
+            color: #FFD700;
             font-family: 'ZCOOL XiaoWei', serif;
             letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
         }
 
         .weekdays {
@@ -115,8 +127,9 @@
             margin-bottom: 10px;
             text-align: center;
             font-weight: bold;
-            color: #48cae4;
+            color: #FFA500;
             font-size: 0.9rem;
+            text-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
         }
 
         .days-grid {
@@ -126,27 +139,27 @@
         }
 
         .day-cell {
-            background: rgba(0, 30, 60, 0.5);
-            border: 1px solid rgba(144, 224, 239, 0.15);
+            background: rgba(0, 15, 30, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.15);
             border-radius: 10px;
-            aspect-ratio: 1 / 1.15; /* 调整宽高比，给内容足够空间 */
+            aspect-ratio: 1 / 1.15;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* 改为居中 */
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
             padding: 5px;
-            overflow: hidden; /* 防止内容溢出 */
-            min-height: 80px; /* 确保最小高度 */
+            overflow: hidden;
+            min-height: 80px;
         }
 
         .day-cell:hover {
             transform: translateY(-2px);
-            background: rgba(0, 80, 120, 0.4);
-            border-color: rgba(144, 224, 239, 0.6);
-            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+            background: rgba(26, 6, 48, 0.5);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
         }
 
         .day-cell.other-month {
@@ -154,24 +167,25 @@
         }
 
         .day-cell.today {
-            border: 2px solid #00b4d8;
-            box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
-            background: rgba(0, 180, 216, 0.2);
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.15);
         }
 
         .day-number {
-            font-size: 1rem; /* 稍微减小字号 */
+            font-size: 1rem;
             font-weight: bold;
-            color: #caf0f8;
-            margin-bottom: 4px; /* 调整间距 */
+            color: #FFD700;
+            margin-bottom: 4px;
             line-height: 1;
             z-index: 2;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
         }
 
         .fish-icon {
-            font-size: 1.6rem; /* 调整鱼图标大小 */
+            font-size: 1.6rem;
             line-height: 1;
-            filter: drop-shadow(0 0 3px rgba(255,255,255,0.3));
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
             z-index: 1;
             margin-top: 2px;
         }
@@ -181,7 +195,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 5, 15, 0.9);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -192,8 +206,8 @@
         .modal.active { display: flex; }
 
         .fish-card {
-            background: linear-gradient(135deg, rgba(0,40,80,0.95), rgba(0,60,90,0.95));
-            border: 2px solid rgba(144,224,239,0.5);
+            background: linear-gradient(135deg, rgba(0, 15, 30, 0.95), rgba(26, 6, 48, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.5);
             border-radius: 20px;
             padding: 30px;
             max-width: 450px;
@@ -201,7 +215,9 @@
             text-align: center;
             position: relative;
             animation: float 4s ease-in-out infinite;
-            box-shadow: 0 0 40px rgba(0,180,216,0.4);
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.4),
+                inset 0 0 30px rgba(0, 119, 182, 0.15);
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -216,7 +232,7 @@
             top: 10px; 
             right: 15px;
             font-size: 2rem;
-            color: #90e0ef;
+            color: #FFD700;
             cursor: pointer;
             opacity: 0.7;
             transition: 0.3s;
@@ -225,6 +241,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
 
         .close-btn:hover { opacity: 1; }
@@ -232,7 +249,7 @@
         .fish-display {
             font-size: 4rem;
             margin: 15px 0;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
             animation: swim 2s ease-in-out infinite;
             line-height: 1;
         }
@@ -244,23 +261,24 @@
 
         .fish-name {
             font-size: 1.8rem;
-            color: #caf0f8;
+            color: #FFD700;
             margin-bottom: 8px;
             font-family: 'ZCOOL XiaoWei', serif;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
         .fish-date {
-            color: #48cae4;
+            color: #FFA500;
             font-size: 0.9rem;
             margin-bottom: 15px;
         }
 
         .fish-poem {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 5, 15, 0.4);
             padding: 15px;
             border-radius: 10px;
-            border-left: 3px solid #00b4d8;
+            border-left: 3px solid #FFD700;
             margin: 15px 0;
             text-align: left;
         }
@@ -271,6 +289,7 @@
             line-height: 1.6;
             margin: 4px 0;
             font-style: italic;
+            text-shadow: 0 0 5px rgba(0, 119, 182, 0.3);
         }
 
         .fish-desc {
@@ -311,7 +330,7 @@
     <div class="container">
         <div class="header">
             <h1 class="title">深海都市奇幻鱼日历</h1>
-            <p style="color: #48cae4; opacity: 0.8; font-size: 0.9rem;">365日 · 365种游弋的幻想 · 2026</p>
+            <p style="color: #FFA500; opacity: 0.8; font-size: 0.9rem;">365日 · 365种游弋的幻想 · 2026</p>
         </div>
 
         <div class="calendar-box">
@@ -341,7 +360,7 @@
     </div>
 
     <script>
-        // 365天完整数据库 - 完全保持不变
+        // 365天数据库完全保持不变
         const fishDatabase = {
             // 一月（冬季，新年，小寒，大寒）
             "1-1": { name: "鞭炮鱼", emoji: "🧨", poem: ["红鳞炸响第一声","碎金沉向海底深","新年的巡游开始"], desc: "在午夜钟声里炸裂成红色的浪，用声响唤醒沉睡的深海" },
@@ -866,7 +885,7 @@
 
         function closeModal(event) {
             if (!event || event.target.id === 'modal' || event.target.className === 'close-btn') {
-                document.getElementById('modal').classList.remove('active');
+                document.getElementById('modal').classList.add('active');
             }
         }
 
